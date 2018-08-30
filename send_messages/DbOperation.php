@@ -5,8 +5,7 @@
  * Date: 27/08/2018
  * Time: 12:04
  */
-
-include_once dirname(__FILE__) . '../Config.php';
+require_once '../Config.php';
 
 
 class DbOperation{
