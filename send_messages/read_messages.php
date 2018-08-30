@@ -135,48 +135,49 @@ $last_name = $_SESSION['last_name'];
         <?php
         $req = $conn->read_messages($records_per_page, $from_record_num);
         $res = json_decode($req, True);
-        if ($res['status'] == 'found'){
+        if (in_array('not-found', $res)) {
+                echo "<div class='alert alert-danger'>No Message found.</div>";
+        }
+        else {
+            for ($i = 0, $l = count($res); $i < $l; ++$i) {
 
-            $id_message = $res['id_message'];
-            $title = $res['title'];
-            $send_date = $res['send_date'];
-            $destination = $res['destination'];
+                $id_message = $res[$i]['id_message'];
+                $title = $res[$i]['title'];
+                $send_date = $res[$i]['send_date'];
+                $destination = $res[$i]['destination'];
 
-            echo "<table class='table table-hover table-responsive table-bordered'>";//start table
+                echo "<table class='table table-hover table-responsive table-bordered'>";//start table
 
-            //creating our table heading
-            echo "<tr>";
-            echo "<th>Title</th>";
-            echo "<th>Date</th>";
-            echo "<th>Destination</th>";
-            echo "<th>Action</th>";
-            echo "</tr>";
+                //creating our table heading
+                echo "<tr>";
+                echo "<th>Title</th>";
+                echo "<th>Date</th>";
+                echo "<th>Destination</th>";
+                echo "<th>Action</th>";
+                echo "</tr>";
 
 
-            echo "<tr>";
-            echo "<td>$title</td>";
-            echo "<td>$send_date</td>";
-            echo "<td>$destination</td>";
-            echo "<td>";
-            // read one record
-            echo "<a href='read_one_message.php?id=$id_message' class='btn btn-info m-r-1em'>Read</a>";
+                echo "<tr>";
+                echo "<td>$title</td>";
+                echo "<td>$send_date</td>";
+                echo "<td>$destination</td>";
+                echo "<td>";
+                // read one record
+                echo "<a href='read_one_message.php?id=$id_message' class='btn btn-info m-r-1em'>Read</a>";
 
-            // end table
-            echo "</table>";
+                // end table
+                echo "</table>";
+            }
 
             // PAGINATION
             // count total number of rows
-            $total_rows = $res['total_rows'];
+            $total_rows = count($res);
 
             // paginate records
             $page_url="read_messages.php?";
             include_once "paging.php";
         }
 
-        // if no records found
-        else{
-            echo "<div class='alert alert-danger'>No Messages found.</div>";
-        }
         ?>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>

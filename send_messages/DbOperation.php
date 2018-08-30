@@ -29,7 +29,7 @@ class DbOperation{
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(AUTOCOMPLETE_MESSAGE, False, $context);
 
         return $sFile;
     }
@@ -55,7 +55,7 @@ class DbOperation{
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(CREATE_MESSAGE, False, $context);
 
         return $sFile;
     }
@@ -79,7 +79,7 @@ class DbOperation{
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(READ_MESSAGES, False, $context);
 
         return $sFile;
     }
@@ -102,7 +102,7 @@ class DbOperation{
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(READ_ONE_MESSAGE, False, $context);
 
         return $sFile;
     }
@@ -127,7 +127,7 @@ class DbOperation{
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(SEARCH_MESSAGE, False, $context);
 
         return $sFile;
     }
@@ -145,7 +145,7 @@ class DbOperation{
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(GET_ALL_TOKENS, False, $context);
 
         return $sFile;
     }

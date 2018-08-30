@@ -7,10 +7,15 @@ $conn = new DbOperation();
 if(isset($_POST["query"]))
 {
     $output = '';
-    $req = $conn->autocomplete_message($_POST["query"]);
+    $req = $conn->autocomplete_user($_POST["query"]);
     $res = json_decode($req,True);
-
-    $output .= '<li>'.$res['title'].'</li>';
+    if(in_array('not-result',$res)){
+        $output .= '<li>No Message</li>';
+    }else{
+        foreach ($res as $key => $value){
+            $output .= '<li>'.$value.'</li>';
+        }
+    }
 
     $output .= '</ul>';
     echo $output;

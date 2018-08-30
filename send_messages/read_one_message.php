@@ -80,6 +80,8 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
         $body = $mes['body'];
         $send_date = $mes['send_date'];
         $destination = $mes['destination'];
+    }else{
+        echo "<div class='alert alert-danger'>Impossible to read the message.</div>";
     }
 
 
