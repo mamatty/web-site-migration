@@ -91,7 +91,7 @@ $last_name = $_SESSION['last_name'];
                 <li><a href="../manage_users/manage_users.php">Manage Users</a></li>
                 <li class="current"><a href="manage_users.php">Manage Schedules</a></li>
                 <li><a href="../send_messages/read_messages.php">Send Messages</a></li>
-                <li><a href="dashboard.html">Dashboard</a></li>
+                <li><a href="../dashboard/dashboard.php">Dashboard</a></li>
             </ul>
         </nav>
     </header>
@@ -187,7 +187,7 @@ $last_name = $_SESSION['last_name'];
             $total_rows = count($user);
 
             // paginate records
-            $page_url="manage_users.php?";
+            $page_url="dashboard.php?";
             include_once "paging.php";
         }
 

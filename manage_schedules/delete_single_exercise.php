@@ -16,7 +16,7 @@ try{
     $del = json_decode($req,True);
 
     if(in_array('successful',$del)){
-        header('Location: manage_users.php?action=deleted');
+        header('Location: dashboard.php?action=deleted');
     }else{
         die('Unable to delete record.');
     }
