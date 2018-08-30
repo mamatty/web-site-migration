@@ -116,10 +116,10 @@ $last_name = $_SESSION['last_name'];
                 $res = $conn->create_user($name, $surname, $email, $passwordHash, $address,  $birthdate, $phone, null, $subscription, $end_subscription);
                 $user = json_decode($res, True);
 
-                if($user['status'] == 'successful'){
+                if(in_array('successful',$user)){
                     echo "<div class='alert alert-success'>User correctly registered was saved.</div>";
 
-                }elseif($user['status'] == 'already-registered'){
+                }elseif(in_array('already-registered',$user)){
                     echo "<div class='alert alert-danger'>User already exists.</div>";
                 }else{
                     echo "<div class='alert alert-danger'>User not registered.</div>";

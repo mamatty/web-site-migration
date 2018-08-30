@@ -79,6 +79,8 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
             $subscription = $user['subscription'];
             $end_subscription = $user['end_subscription'];
             //$image = $user['image'];
+        }else{
+            echo "<div class='alert alert-danger'>Impossible to read the user.</div>";
         }
 
 

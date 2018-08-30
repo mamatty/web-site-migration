@@ -29,7 +29,7 @@ class DbOperation{
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(AUTOCOMPLETE_USER, False, $context);
 
         return $sFile;
     }
@@ -61,7 +61,7 @@ class DbOperation{
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(CREATE_USER, False, $context);
 
         return $sFile;
     }
@@ -84,7 +84,7 @@ class DbOperation{
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(DELETE_USER, False, $context);
 
         return $sFile;
     }
@@ -108,7 +108,7 @@ class DbOperation{
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(MANAGE_USERS, False, $context);
 
         return $sFile;
     }
@@ -126,7 +126,7 @@ class DbOperation{
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(PROFILE, False, $context);
 
         return $sFile;
     }
@@ -149,7 +149,7 @@ class DbOperation{
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(READ_ONE_USER, False, $context);
 
         return $sFile;
     }
@@ -174,7 +174,7 @@ class DbOperation{
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(SEARCH_USER, False, $context);
 
         return $sFile;
     }
@@ -194,7 +194,7 @@ class DbOperation{
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(LOOK_UPDATED_USER, False, $context);
 
         return $sFile;
     }
@@ -224,7 +224,7 @@ class DbOperation{
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(UPDATE_USER, False, $context);
 
         return $sFile;
     }

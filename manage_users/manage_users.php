@@ -138,61 +138,59 @@ $last_name = $_SESSION['last_name'];
             <?php
             $req = $conn->manage_users($records_per_page,$from_record_num);
             $user = json_decode($req,True);
+            if (in_array('not-found', $user)) {
+                echo "<div class='alert alert-danger'>No User found.</div>";
+            } else {
 
-            //check if more than 0 record found
-            if ($user['status'] == 'found'){
+                for ($i = 0, $l = count($user); $i < $l; ++$i) {
+                    $id_user = $user[$i]['id_user'];
+                    $name = $user[$i]['name'];
+                    $surname = $user[$i]['surname'];
+                    $email = $user[$i]['email'];
 
-                $id_user = $user['id_user'];
-                $name = $user['name'];
-                $surname = $user['surname'];
-                $email = $user['email'];
+                    echo "<table class='table table-hover table-responsive table-bordered'>";//start table
 
-                echo "<table class='table table-hover table-responsive table-bordered'>";//start table
-
-                //creating our table heading
-                echo "<tr>";
-                echo "<th>ID</th>";
-                echo "<th>Name</th>";
-                echo "<th>Surname</th>";
-                echo "<th>Email</th>";
-                echo "<th>Action</th>";
-                echo "</tr>";
+                    //creating our table heading
+                    echo "<tr>";
+                    echo "<th>ID</th>";
+                    echo "<th>Name</th>";
+                    echo "<th>Surname</th>";
+                    echo "<th>Email</th>";
+                    echo "<th>Action</th>";
+                    echo "</tr>";
 
 
-                echo "<tr>";
-                echo "<td>$id_user</td>";
-                echo "<td>$name</td>";
-                echo "<td>$surname</td>";
-                echo "<td>$email</td>";
-                echo "<td>";
+                    echo "<tr>";
+                    echo "<td>$id_user</td>";
+                    echo "<td>$name</td>";
+                    echo "<td>$surname</td>";
+                    echo "<td>$email</td>";
+                    echo "<td>";
 
-                // read one record
-                echo "<a href='read_one_user.php?id=$id_user' class='btn btn-info m-r-1em'>Read</a>";
+                    // read one record
+                    echo "<a href='read_one_user.php?id=$id_user' class='btn btn-info m-r-1em'>Read</a>";
 
-                // we will use this links on next part of this post
-                echo "<a href='update_user.php?id=$id_user' class='btn btn-primary m-r-1em'>Edit</a>";
+                    // we will use this links on next part of this post
+                    echo "<a href='update_user.php?id=$id_user' class='btn btn-primary m-r-1em'>Edit</a>";
 
-                // we will use this links on next part of this post
-                echo "<a href='#' onclick='delete_user($id_user);'  class='btn btn-danger'>Delete</a>";
-                echo "</td>";
-                echo "</tr>";
+                    // we will use this links on next part of this post
+                    echo "<a href='#' onclick='delete_user($id_user);'  class='btn btn-danger'>Delete</a>";
+                    echo "</td>";
+                    echo "</tr>";
 
-                // end table
-                echo "</table>";
+                    // end table
+                    echo "</table>";
+                }
 
                 // PAGINATION
                 // count total number of rows
-                $total_rows = $user['total_rows'];
+                $total_rows = count($user);
 
                 // paginate records
                 $page_url="manage_users.php?";
                 include_once "paging.php";
             }
 
-            // if no records found
-            else{
-                echo "<div class='alert alert-danger'>No user found.</div>";
-            }
             ?>
         <footer>
             <p>© 2018 Fitness Club</p>

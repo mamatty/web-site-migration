@@ -123,7 +123,14 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
                 $req_up = $conn->update_user($id,$new_name,$new_surname,$new_email,$new_birth,$new_addr,$new_sub, $new_end_sub);
                 $user_up = json_decode($req_up, True);
 
-                if($user_up['status'] == 'found'){
+                if (in_array('not-found', $user_up)) {
+                    echo "<div class='alert alert-danger'>User not found. There is an error!</div>";
+                    throw new Exception();
+                }
+                elseif(in_array('not-updated', $user_up)) {
+                    echo "<div class='alert alert-danger'>Unable to update user. Please try again.</div>";
+                    throw new Exception();
+                } else {
 
                     $name = $user_up['name'];
                     $surname = $user_up['surname'];
@@ -134,8 +141,6 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
 
                     echo "<div class='alert alert-success'>User was updated.</div>";
 
-                }else{
-                    echo "<div class='alert alert-danger'>Unable to update user. Please try again.</div>";
                 }
             }
             else{

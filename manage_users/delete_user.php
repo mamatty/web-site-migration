@@ -15,7 +15,7 @@ try{
 
     $req = $conn->delete_user($id);
     $res = json_decode($req, True);
-    if($res['status'] == 'successful'){
+    if(in_array('successful',$res)){
         header('Location: manage_users.php?action=deleted');
     }else{
         die('Unable to delete record.');
