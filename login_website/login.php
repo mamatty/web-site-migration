@@ -7,7 +7,7 @@ if(isset($_POST['email']) and isset($_POST['password'])){
     $req = $conn-> login($_POST['email'],$_POST['password'], $token);
     $login = json_decode($req, True);
 
-if ( $login['status'] == 'not-found' ){ // User doesn't exist
+if (in_array('not-found',$login) ){ // User doesn't exist
     $_SESSION['message'] = "User or password not correct";
     header("location: error.php");
 }

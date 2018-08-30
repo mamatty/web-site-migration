@@ -30,12 +30,12 @@ class DbOperation{
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(LOGIN, False, $context);
 
         return $sFile;
     }
 
-    public function logout(){
+    public function logout($tokens){
 
         $options = array(
             'http' => array(
@@ -43,18 +43,20 @@ class DbOperation{
                     "Content-type: application/x-www-form-urlencoded"
                 ),
                 'method' => 'GET',
+                'content' => http_build_query($tokens)
             )
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(LOGOUT, False, $context);
 
         return $sFile;
     }
 
-    public function register_account($email, $first_name, $last_name, $password){
+    public function register_account($token,$email, $first_name, $last_name, $password){
 
         $data = array(
+            'token' => $token,
             'email' => $email,
             'password' => $password,
             'first_name' => $first_name,
@@ -72,7 +74,7 @@ class DbOperation{
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(REGISTER, False, $context);
 
         return $sFile;
     }

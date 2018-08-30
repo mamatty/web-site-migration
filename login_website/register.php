@@ -5,8 +5,10 @@
 require_once "DbOperation.php";
 $conn = new DbOperation();
 $password = password_hash($_POST['password'], PASSWORD_BCRYPT);
+$email = $_POST['email'];
+$token = $conn->generateToken();
 if(filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    $req = $conn->register_account($_POST['email'],$_POST['firstname'], $_POST['lastname'], $password);
+    $req = $conn->register_account($token, $email, $_POST['firstname'], $_POST['lastname'], $password);
     $register = json_decode($req, True);
 
     // We know user email exists if the rows returned are more than 0
@@ -24,6 +26,10 @@ if(filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $_SESSION['last_name'] = $_POST['lastname'];
             $_SESSION['active'] = 1; //0 until user activates their account with verify.php
             $_SESSION['logged_in'] = true; // So we know the user has logged in
+            $_SESSION['cookie'] = array(
+                'token' => $token,
+                'cookie' => $register['cookie']
+            );
 
             header("location: profile.php");
 
