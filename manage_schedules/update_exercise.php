@@ -85,6 +85,12 @@ $last_name = $_SESSION['last_name'];
         $weight = $ex['weight'];
         $ripetitions = $ex['ripetitions'];
     }
+    elseif($ex['status'] == 'exercise-not-found'){
+        echo "<div class='alert alert-danger'>Exercise not found</div>";
+    }
+    else{
+        echo "<div class='alert alert-danger'>Some exercise has been removed</div>";
+    }
 
     ?>
     <?php
@@ -99,7 +105,15 @@ $last_name = $_SESSION['last_name'];
             // read current record's data
             $res_up = $conn->update_exercise($id, $_POST['name'], $_POST['day'], $_POST['ripetitions'], $_POST['weight'], $_POST['detail']);
             $ex_up = json_decode($res,True);
-            if($ex_up['status'] == 'found'){
+            if (in_array('not-found', $ex_up)) {
+                echo "<div class='alert alert-danger'>Exercise name not found.</div>";
+                throw new Exception();
+            }
+            elseif(in_array('not-updated', $ex_up)) {
+                echo "<div class='alert alert-danger'>Unable to update exercise. Please try again.</div>";
+                throw new Exception();
+            } else {
+
                 $id_exercise = $ex_up['id_exercise'];
                 $name = $ex_up['name'];
                 $day = $ex_up['day'];
@@ -109,15 +123,6 @@ $last_name = $_SESSION['last_name'];
 
                 echo "<div class='alert alert-success'>Exercise was updated.</div>";
             }
-            elseif($ex_up['status'] == 'not-found'){
-                echo "<div class='alert alert-danger'>Exercise name not found.</div>";
-                throw new Exception();
-            }
-            else {
-                echo "<div class='alert alert-danger'>Unable to update exercise. Please try again.</div>";
-                throw new Exception();
-            }
-
         }
         catch (Exception $e){
             echo "<div class='alert alert-danger'>Impossible to update the exercise!</div>";

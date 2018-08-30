@@ -122,7 +122,7 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
             $req = $conn->create_schedule($id,$name,$detail,$start_date,$end_date,$num_days,$objective);
             $schedule = json_decode($req, True);
 
-            if ($schedule['status'] == 'successful') {
+            if (in_array('successful',$schedule)) {
                 echo "<div class='alert alert-success'>Schedule was inserted.</div>";
             } else{
                 echo "<div class='alert alert-danger'>Schedule not correctly inserted!</div>";

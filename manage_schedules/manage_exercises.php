@@ -143,61 +143,61 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
         $req = $conn->manage_exercises($id,$records_per_page,$from_record_num);
         $ex = json_decode($req, True);
 
-        if ($ex['status'] == 'found'){
+        if (in_array('exercise-not-found',$ex)) {
+            echo "<div class='alert alert-danger'>No exercise found.</div>";
+        }elseif(in_array('exercise_name-not-found',$ex)) {
+            echo "<div class='alert alert-danger'>Some exercise has been removed.</div>";
+        }else{
+            for($i = 0, $l = count($ar); $i < $l; ++$i) {
+                $day = $ex[$i]['day'];
+                $name = $ex[$i]['name'];
+                $ripetitions = $ex[$i]['ripetitions'];
+                $weight = $ex[$i]['weight'];
+                $details = $ex[$i]['details'];
+                $id_list = $ex[$i]['id_list'];
+                $id_exercise = $ex[$i]['id_exercise'];
 
-            $day = $ex['day'];
-            $name = $ex['name'];
-            $ripetitions = $ex['ripetitions'];
-            $weight = $ex['weight'];
-            $details = $ex['details'];
-            $id_list = $ex['id_list'];
-            $id_exercise = $ex['id_exercise'];
+                echo "<table class='table table-hover table-responsive table-bordered'>";//start table
 
-            echo "<table class='table table-hover table-responsive table-bordered'>";//start table
+                //creating our table heading
+                echo "<tr>";
+                echo "<th>Day</th>";
+                echo "<th>Name</th>";
+                echo "<th>Ripetitions</th>";
+                echo "<th>Weight</th>";
+                echo "<th>Details</th>";
+                echo "<th>Action</th>";
+                echo "</tr>";
 
-            //creating our table heading
-            echo "<tr>";
-            echo "<th>Day</th>";
-            echo "<th>Name</th>";
-            echo "<th>Ripetitions</th>";
-            echo "<th>Weight</th>";
-            echo "<th>Details</th>";
-            echo "<th>Action</th>";
-            echo "</tr>";
+                // creating new table row per record
+                echo "<tr>";
+                echo "<td>$day</td>";
+                echo "<td>$name</td>";
+                echo "<td>$ripetitions</td>";
+                echo "<td>$weight</td>";
+                echo "<td>$details</td>";
+                echo "<td>";
+                // read one record
+                echo "<a href='read_one_exercise.php?id=$id_exercise' class='btn btn-info m-r-1em'>Read</a>";
 
-            // creating new table row per record
-            echo "<tr>";
-            echo "<td>$day</td>";
-            echo "<td>$name</td>";
-            echo "<td>$ripetitions</td>";
-            echo "<td>$weight</td>";
-            echo "<td>$details</td>";
-            echo "<td>";
-            // read one record
-            echo "<a href='read_one_exercise.php?id=$id_exercise' class='btn btn-info m-r-1em'>Read</a>";
+                // we will use this links on next part of this post
+                echo "<a href='update_exercise.php?id=$id_list' class='btn btn-primary m-r-1em'>Edit</a>";
 
-            // we will use this links on next part of this post
-            echo "<a href='update_exercise.php?id=$id_list' class='btn btn-primary m-r-1em'>Edit</a>";
+                // we will use this links on next part of this post
+                echo "<a href='#' onclick='delete_exercise($id_list);'  class='btn btn-danger'>Delete</a>";
+                echo "</td>";
+                echo "</tr>";
 
-            // we will use this links on next part of this post
-            echo "<a href='#' onclick='delete_exercise($id_list);'  class='btn btn-danger'>Delete</a>";
-            echo "</td>";
-            echo "</tr>";
-
-            // end table
-            echo "</table>";
-
-            $total_rows = $ex['total_rows'];
+                // end table
+                echo "</table>";
+            }
+            $total_rows = count($ex);
 
             // paginate records
             $page_url="manage_exercises.php?";
             include_once "paging.php";
         }
 
-        // if no records found
-        else{
-            echo "<div class='alert alert-danger'>No exercise found.</div>";
-        }
         ?>
     <footer>
         <p>© 2018 Fitness Club</p>

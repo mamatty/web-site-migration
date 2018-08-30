@@ -136,71 +136,78 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
     <br>
 
     <?php
-    $res = $conn->manage_schedules($id,$records_per_page,$from_record_num);
-    $schedule = json_decode($res, True);
-    if ($schedule['status'] == 'found') {
+    $check = $conn->account_profile($_SESSION['cookie']);
+    $account = json_decode($check, True);
+    if (in_array('found',$account)) {
         ?>
-            <h3><?php echo "Schedule List of " . $row['name'] . " " . $row['surname']; ?></h3>
-            <?php
-
-        ?>
-    <br>
+        <h3><?php echo "Schedule List of " . $account['name'] . " " . $account['surname']; ?></h3>
         <?php
 
-        $id_schedule = $schedule['status'];
-        $name = $schedule['status'];
-        $details = $schedule['status'];
-        $start_date = $schedule['status'];
-        $end_date = $schedule['status'];
-        $num_days = $schedule['status'];
-        $objective = $schedule['status'];
-
-        echo "<table class='table table-hover table-responsive table-bordered'>";//start table
-
-        //creating our table heading
-        echo "<tr>";
-        echo "<th>Name</th>";
-        echo "<th>Detail</th>";
-        echo "<th>Start Date</th>";
-        echo "<th>End Date</th>";
-        echo "<th>Number of days</th>";
-        echo "<th>Objective</th>";
-        echo "<th>Action</th>";
-        echo "</tr>";
-
-
-        // creating new table row per record
-        echo "<tr>";
-        echo "<td>$name</td>";
-        echo "<td>$details</td>";
-        echo "<td>$start_date</td>";
-        echo "<td>$end_date</td>";
-        echo "<td>$num_days</td>";
-        echo "<td>$objective</td>";
-        echo "<td>";
-        // read one record
-        echo "<a href='manage_exercises.php?id=$id_schedule' class='btn btn-info m-r-1em'>Manage Schedule's Exercises</a>";
-
-        // we will use this links on next part of this post
-        echo "<a href='#' onclick='delete_schedule($id_schedule);'  class='btn btn-danger'>Delete</a>";
-        echo "</td>";
-        echo "</tr>";
-
-        // end table
-        echo "</table>";
-
-        // PAGINATION
-        // count total number of rows
-        $total_rows = $schedule['total_rows'];
-
-        // paginate records
-        $page_url = "manage_schedules.php?";
-        include_once "paging.php";
-        }
-        // if no records found
-        else{
+        ?>
+        <br>
+        <?php
+        $res = $conn->manage_schedules($id, $records_per_page, $from_record_num);
+        $schedule = json_decode($res, True);
+        if (in_array('not-found', $schedule)) {
             echo "<div class='alert alert-danger'>No Schedule found.</div>";
+        } else {
+
+            for ($i = 0, $l = count($schedule); $i < $l; ++$i) {
+                $id_schedule = $schedule[$i]['id_schedule'];
+                $name = $schedule[$i]['name'];
+                $details = $schedule[$i]['details'];
+                $start_date = $schedule[$i]['start_date'];
+                $end_date = $schedule[$i]['end_date'];
+                $num_days = $schedule[$i]['num_days'];
+                $objective = $schedule[$i]['objective'];
+
+                echo "<table class='table table-hover table-responsive table-bordered'>";//start table
+
+                //creating our table heading
+                echo "<tr>";
+                echo "<th>Name</th>";
+                echo "<th>Detail</th>";
+                echo "<th>Start Date</th>";
+                echo "<th>End Date</th>";
+                echo "<th>Number of days</th>";
+                echo "<th>Objective</th>";
+                echo "<th>Action</th>";
+                echo "</tr>";
+
+
+                // creating new table row per record
+                echo "<tr>";
+                echo "<td>$name</td>";
+                echo "<td>$details</td>";
+                echo "<td>$start_date</td>";
+                echo "<td>$end_date</td>";
+                echo "<td>$num_days</td>";
+                echo "<td>$objective</td>";
+                echo "<td>";
+                // read one record
+                echo "<a href='manage_exercises.php?id=$id_schedule' class='btn btn-info m-r-1em'>Manage Schedule's Exercises</a>";
+
+                // we will use this links on next part of this post
+                echo "<a href='#' onclick='delete_schedule($id_schedule);'  class='btn btn-danger'>Delete</a>";
+                echo "</td>";
+                echo "</tr>";
+
+                // end table
+                echo "</table>";
+            }
+
+
+            // PAGINATION
+            // count total number of rows
+            $total_rows = count($schedule);
+
+            // paginate records
+            $page_url = "manage_schedules.php?";
+            include_once "paging.php";
         }
+    }else{
+        echo "<div class='alert alert-danger'>No User found.</div>";
+    }
         ?>
     <footer>
         <p>© 2018 Fitness Club</p>

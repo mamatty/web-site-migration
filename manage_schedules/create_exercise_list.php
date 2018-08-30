@@ -104,7 +104,7 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
                 $req = $conn->create_exercise_list($name,$description,$muscolar_zone,$url);
                 $ex_list = json_decode($req, True);
 
-                if ($ex_list['status'] == 'successful') {
+                if (in_array('successful',$ex_list)) {
                     echo "<div class='alert alert-success'>Exercise was inserted.</div>";
                 }else{
                     echo "<div class='alert alert-danger'>Impossible to insert the exercise!</div>";

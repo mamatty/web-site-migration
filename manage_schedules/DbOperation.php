@@ -29,7 +29,7 @@ class DbOperation{
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(AUTOCOMPLETE_USER, False, $context);
 
         return $sFile;
     }
@@ -52,7 +52,7 @@ class DbOperation{
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(AUTOCOMPLETE_EXERCISE, False, $context);
 
         return $sFile;
     }
@@ -80,7 +80,7 @@ class DbOperation{
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(CREATE_EXERCISE, False, $context);
 
         return $sFile;
     }
@@ -106,7 +106,7 @@ class DbOperation{
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(CREATE_EXERCISE_LIST, False, $context);
 
         return $sFile;
     }
@@ -135,7 +135,7 @@ class DbOperation{
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(CREATE_SCHEDULE, False, $context);
 
         return $sFile;
     }
@@ -158,7 +158,7 @@ class DbOperation{
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(DELETE_SCHEDULE, False, $context);
 
         return $sFile;
     }
@@ -181,7 +181,7 @@ class DbOperation{
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(DELETE_SINGLE_EXERCISE, False, $context);
 
         return $sFile;
     }
@@ -204,7 +204,7 @@ class DbOperation{
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(DELETE_SINGLE_EXERCISE_LIST, False, $context);
 
         return $sFile;
     }
@@ -227,7 +227,7 @@ class DbOperation{
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(DELETE_SINGLE_EXERCISE_SCHEDULE, False, $context);
 
         return $sFile;
     }
@@ -252,7 +252,7 @@ class DbOperation{
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(MANAGE_EXERCISES, False, $context);
 
         return $sFile;
     }
@@ -277,7 +277,7 @@ class DbOperation{
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(MANAGE_SCHEDULES, False, $context);
 
         return $sFile;
     }
@@ -302,12 +302,12 @@ class DbOperation{
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(MANAGE_USERS, False, $context);
 
         return $sFile;
     }
 
-    public function account_profile(){
+    public function account_profile($cookie){
 
         $options = array(
             'http' => array(
@@ -315,12 +315,13 @@ class DbOperation{
                     "Content-type: application/x-www-form-urlencoded",
                     "Authorization: "
                 ),
-                'method' => 'GET'
+                'method' => 'GET',
+                'content' => http_build_query($cookie)
             )
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(PROFILE, False, $context);
 
         return $sFile;
     }
@@ -344,7 +345,7 @@ class DbOperation{
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(READ_EXERCISES, False, $context);
 
         return $sFile;
     }
@@ -367,7 +368,7 @@ class DbOperation{
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(READ_ONE_EXERCISE, False, $context);
 
         return $sFile;
     }
@@ -392,7 +393,7 @@ class DbOperation{
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(SEARCH_EXERCISE_LIST, False, $context);
 
         return $sFile;
     }
@@ -417,7 +418,7 @@ class DbOperation{
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(SEARCH_USER, False, $context);
 
         return $sFile;
     }
@@ -437,7 +438,7 @@ class DbOperation{
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(LOOK_UPDATED_EXERCISE, False, $context);
 
         return $sFile;
     }
@@ -456,7 +457,7 @@ class DbOperation{
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(LOOK_UPDATED_EXERCISE_LIST, False, $context);
 
         return $sFile;
     }
@@ -475,7 +476,7 @@ class DbOperation{
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(LOOK_UPDATED_USER, False, $context);
 
         return $sFile;
     }
@@ -503,7 +504,7 @@ class DbOperation{
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(UPDATE_EXERCISE, False, $context);
 
         return $sFile;
     }
@@ -530,7 +531,7 @@ class DbOperation{
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(GENERALI, False, $context);
+        $sFile = file_get_contents(UPDATE_EXERCISE_LIST, False, $context);
 
         return $sFile;
     }

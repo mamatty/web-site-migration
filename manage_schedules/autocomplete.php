@@ -9,8 +9,13 @@ if(isset($_POST["query"]))
     $output = '';
     $req = $conn->autocomplete_user($_POST["query"]);
     $res = json_decode($req,True);
-
-    $output .= '<li>'.$res['surname'].'</li>';
+    if(in_array('not-result',$res)){
+        $output .= '<li>No User</li>';
+    }else{
+        foreach ($res as $key => $value){
+            $output .= '<li>'.$value.'</li>';
+        }
+    }
 
     $output .= '</ul>';
     echo $output;

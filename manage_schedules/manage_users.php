@@ -143,55 +143,54 @@ $last_name = $_SESSION['last_name'];
 
         $res = $conn->manage_users($records_per_page,$from_record_num);
         $user = json_decode($res,True);
-        if ($user['status'] = 'found'){
+        if (in_array('not-found', $user)) {
+            echo "<div class='alert alert-danger'>No User found.</div>";
+        } else {
 
-            $id_user = $user['id_user'];
-            $name = $user['name'];
-            $surname = $user['surname'];
-            $email = $user['email'];
+            for ($i = 0, $l = count($user); $i < $l; ++$i) {
+                $id_user = $user[$i]['id_user'];
+                $name = $user[$i]['name'];
+                $surname = $user[$i]['surname'];
+                $email = $user[$i]['email'];
 
-            echo "<table class='table table-hover table-responsive table-bordered'>";//start table
+                echo "<table class='table table-hover table-responsive table-bordered'>";//start table
 
-            //creating our table heading
-            echo "<tr>";
-            echo "<th>ID</th>";
-            echo "<th>Name</th>";
-            echo "<th>Surname</th>";
-            echo "<th>Email</th>";
-            echo "<th>Action</th>";
-            echo "</tr>";
+                //creating our table heading
+                echo "<tr>";
+                echo "<th>ID</th>";
+                echo "<th>Name</th>";
+                echo "<th>Surname</th>";
+                echo "<th>Email</th>";
+                echo "<th>Action</th>";
+                echo "</tr>";
 
 
-            echo "<tr>";
-            echo "<td>$id_user</td>";
-            echo "<td>$name</td>";
-            echo "<td>$surname</td>";
-            echo "<td>$email</td>";
-            echo "<td>";
-            // read one record
-            echo "<a href='manage_schedules.php?id={$id_user}' class='btn btn-info m-r-1em'>Manage Schedules</a>";
+                echo "<tr>";
+                echo "<td>$id_user</td>";
+                echo "<td>$name</td>";
+                echo "<td>$surname</td>";
+                echo "<td>$email</td>";
+                echo "<td>";
+                // read one record
+                echo "<a href='manage_schedules.php?id={$id_user}' class='btn btn-info m-r-1em'>Manage Schedules</a>";
 
-            // we will use this links on next part of this post
-            echo "<a href='#' onclick='delete_schedule({$id_user});'  class='btn btn-danger'>Delete</a>";
-            echo "</td>";
-            echo "</tr>";
+                // we will use this links on next part of this post
+                echo "<a href='#' onclick='delete_schedule({$id_user});'  class='btn btn-danger'>Delete</a>";
+                echo "</td>";
+                echo "</tr>";
 
-            // end table
-            echo "</table>";
-
+                // end table
+                echo "</table>";
+            }
             // PAGINATION
             // count total number of rows
-            $total_rows = $user['total_rows'];
+            $total_rows = count($user);
 
             // paginate records
             $page_url="manage_users.php?";
             include_once "paging.php";
         }
 
-        // if no records found
-        else{
-            echo "<div class='alert alert-danger'>No user found.</div>";
-        }
         ?>
 
     <footer>

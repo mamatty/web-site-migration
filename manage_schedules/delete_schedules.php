@@ -15,7 +15,7 @@ try{
     $req = $conn->delete_schedule($id);
     $del = json_decode($req,True);
     // Execute the query
-    if($del['status'] == 'successful'){
+    if(in_array('successful',$del)){
         header('Location: manage_users.php?action=deleted');
     }else{
         die('Unable to delete record.');

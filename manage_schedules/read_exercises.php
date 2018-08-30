@@ -136,53 +136,54 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
 
         $res = $conn->read_exercises($records_per_page, $from_record_num);
         $ex = json_decode($res,True);
-        if ($ex['status'] == 'found'){
+        if (in_array('not-found', $ex)) {
+            echo "<div class='alert alert-danger'>No Exercises found.</div>";
+        }
+        else {
+            for ($i = 0, $l = count($ex); $i < $l; ++$i) {
+                $name = $ex[$i]['name'];
+                $description = $ex[$i]['description'];
+                $muscolar_zone = $ex[$i]['muscolar_zone'];
+                $id_exercise = $ex[$i]['id_exercise'];
 
-            $name = $ex['name'];
-            $description = $ex['description'];
-            $muscolar_zone = $ex['muscolar_zone'];
-            $id_exercise = $ex['id_exercise'];
+                echo "<table class='table table-hover table-responsive table-bordered'>";//start table
 
-            echo "<table class='table table-hover table-responsive table-bordered'>";//start table
+                //creating our table heading
+                echo "<tr>";
+                echo "<th>Name</th>";
+                echo "<th>Description</th>";
+                echo "<th>Muscolar Zone</th>";
+                echo "<th>Action</th>";
+                echo "</tr>";
 
-            //creating our table heading
-            echo "<tr>";
-            echo "<th>Name</th>";
-            echo "<th>Description</th>";
-            echo "<th>Muscolar Zone</th>";
-            echo "<th>Action</th>";
-            echo "</tr>";
+                echo "<tr>";
+                echo "<td>$name</td>";
+                echo "<td>$description</td>";
+                echo "<td>$muscolar_zone</td>";
+                echo "<td>";
 
-            echo "<tr>";
-            echo "<td>$name</td>";
-            echo "<td>$description</td>";
-            echo "<td>$muscolar_zone</td>";
-            echo "<td>";
+                // we will use this links on next part of this post
+                echo "<a href='update_exercise_list.php?id=".$id_exercise."' class='btn btn-primary m-r-1em'>Edit</a>";
 
-            // we will use this links on next part of this post
-            echo "<a href='update_exercise_list.php?id=".$id_exercise."' class='btn btn-primary m-r-1em'>Edit</a>";
+                // we will use this links on next part of this post
+                echo "<a href='#' onclick='delete_exercise(".$id_exercise.");'  class='btn btn-danger'>Delete</a>";
+                echo "</td>";
+                echo "</tr>";
 
-            // we will use this links on next part of this post
-            echo "<a href='#' onclick='delete_exercise(".$id_exercise.");'  class='btn btn-danger'>Delete</a>";
-            echo "</td>";
-            echo "</tr>";
-
-            // end table
-            echo "</table>";
+                // end table
+                echo "</table>";
+            }
 
             // PAGINATION
             // count total number of rows
-            $total_rows = $ex['total_rows'];;
+            $total_rows = count($ex);
 
             // paginate records
             $page_url="read_exercises.php?";
             include_once "paging.php";
         }
 
-        // if no records found
-        else{
-            echo "<div class='alert alert-danger'>No exercise found.</div>";
-        }
+
         ?>
     <footer>
         <p>© 2018 Fitness Club</p>

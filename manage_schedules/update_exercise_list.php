@@ -82,6 +82,8 @@ $last_name = $_SESSION['last_name'];
         $day = $ex['day'];
         $detail = $ex['detail'];
         $weight = $ex['weight'];
+    }else{
+        echo "<div class='alert alert-danger'>Exercise not found</div>";
     }
 
     ?>
@@ -94,17 +96,18 @@ $last_name = $_SESSION['last_name'];
             // read current record's data
             $res_up = $conn->update_exercise_list($id, $_POST['name'], $_POST['description'], $_POST['muscolar_zone'], $_POST['url']);
             $ex_up = json_decode($res,True);
-            if($ex_up['status'] == 'found'){
+            if(in_array('not-updated', $ex_up)) {
+                echo "<div class='alert alert-danger'>Unable to update exercise. Please try again.</div>";
+                throw new Exception();
+            } else {
+
                 $name = $ex_up['name'];
                 $description = $ex_up['description'];
                 $muscolar_zone = $ex_up['muscolar_zone'];
                 $url = $ex_up['url'];
 
-                echo "<div class='alert alert-success'>Exercise was updated.</div>";
-            }
-            else {
-                echo "<div class='alert alert-danger'>Unable to update exercise. Please try again.</div>";
-                throw new Exception();
+                    echo "<div class='alert alert-success'>Exercise was updated.</div>";
+
             }
         }
         catch (Exception $e){

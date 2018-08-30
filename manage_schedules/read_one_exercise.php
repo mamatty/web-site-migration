@@ -72,6 +72,8 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
         $name = $ex['name'];
         $description = $ex['description'];
         $muscolar_zone = $ex['muscolar_zone'];
+    }else{
+        echo "<div class='alert alert-danger'>Impossible to read the exercise.</div>";
     }
     ?>
 

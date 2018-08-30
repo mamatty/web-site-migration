@@ -143,51 +143,50 @@ $last_name = $_SESSION['last_name'];
 
             $res = $conn->search_exercise_list($_GET['search'],$records_per_page,$from_record_num);
             $ex = json_decode($res, True);
-            if ($ex['status'] == 'found'){
+            if (in_array('not-found', $ex)) {
+                echo "<div class='alert alert-danger'>No Exercises found.</div>";
+            } else {
+                for ($i = 0, $l = count($ex); $i < $l; ++$i) {
 
-                $id_exercise = $ex['id_exercise'];
-                $description = $ex['description'];
-                $muscolar_zone = $ex['muscolar_zone'];
-                $name = $ex['name'];
+                    $id_exercise = $ex[$i]['id_exercise'];
+                    $description = $ex[$i]['description'];
+                    $muscolar_zone = $ex[$i]['muscolar_zone'];
+                    $name = $ex[$i]['name'];
 
-                echo "<table class='table table-hover table-responsive table-bordered'>";//start table
+                    echo "<table class='table table-hover table-responsive table-bordered'>";//start table
 
-                //creating our table heading
-                echo "<tr>";
-                echo "<th>Name</th>";
-                echo "<th>Description</th>";
-                echo "<th>Muscolar Zone</th>";
-                echo "<th>Action</th>";
-                echo "</tr>";
+                    //creating our table heading
+                    echo "<tr>";
+                    echo "<th>Name</th>";
+                    echo "<th>Description</th>";
+                    echo "<th>Muscolar Zone</th>";
+                    echo "<th>Action</th>";
+                    echo "</tr>";
 
-                echo "<tr>";
-                echo "<td>$name</td>";
-                echo "<td>$description</td>";
-                echo "<td>$muscolar_zone</td>";
-                echo "<td>";
+                    echo "<tr>";
+                    echo "<td>$name</td>";
+                    echo "<td>$description</td>";
+                    echo "<td>$muscolar_zone</td>";
+                    echo "<td>";
 
-                // we will use this links on next part of this post
-                echo "<a href='update_exercise_list.php?id=$id_exercise' class='btn btn-primary m-r-1em'>Edit</a>";
+                    // we will use this links on next part of this post
+                    echo "<a href='update_exercise_list.php?id=$id_exercise' class='btn btn-primary m-r-1em'>Edit</a>";
 
-                // we will use this links on next part of this post
-                echo "<a href='#' onclick='delete_exercise($id_exercise);'  class='btn btn-danger'>Delete</a>";
-                echo "</td>";
-                echo "</tr>";
+                    // we will use this links on next part of this post
+                    echo "<a href='#' onclick='delete_exercise($id_exercise);'  class='btn btn-danger'>Delete</a>";
+                    echo "</td>";
+                    echo "</tr>";
 
-                // end table
-                echo "</table>";
-
+                    // end table
+                    echo "</table>";
+                }
                 // PAGINATION
                 // count total number of rows
-                $total_rows = mysqli_stmt_num_rows($statement);
-
+                $total_rows = count($ex);
 
                 // paginate records
                 $page_url = "read_schedules.php?";
                 include_once "paging.php";
-            }else {
-                // if no records found
-                echo "<div class='alert alert-danger'>No such exercise found.</div>";
             }
         }
         ?>

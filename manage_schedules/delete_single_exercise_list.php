@@ -15,7 +15,7 @@ try{
     $req = $conn->delete_single_exercise_list($id);
     $del = json_decode($req,True);
 
-    if($del['status'] == 'successful'){
+    if(in_array('successful',$del)){
         header('Location: read_exercises.php?action=deleted');
     }else{
         die('Unable to delete record.');

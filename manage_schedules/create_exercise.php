@@ -111,10 +111,10 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
             $req = $conn->create_exercise($id,$name,$day,$series,$weight,$detail);
             $ex = json_decode($req,True);
 
-            if ($ex['status'] == 'successful') {
+            if (in_array('successful',$ex)){
                 echo "<div class='alert alert-success'>Exercise was inserted.</div>";
             }
-            elseif($ex['status'] == 'not-inserted'){
+            elseif(in_array('not-inserted',$ex)){
                 echo "<div class='alert alert-danger'>Impossible to insert the exercise!</div>";
                 throw new Exception();
             }
@@ -124,7 +124,7 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
             }
         }
         catch (Exception $e){
-            echo "<div class='alert alert-danger'>Exercise not correctly inserted!</div>";
+            echo "<div class='alert alert-danger'>Exercise not correctly inserted! Try Again!</div>";
         }
     }
     ?>
