@@ -18,7 +18,14 @@ else { // User exists
     $_SESSION['first_name'] = $login['first_name'];
     $_SESSION['last_name'] = $login['last_name'];
 
-    setcookie("token", $login['token']);
+    /*preg_match_all('/^Set-Cookie:\s*([^;]*)/mi', $login, $matches);
+    $cookies = array();
+    foreach($matches[1] as $item) {
+        parse_str($item, $cookie);
+        $cookies = array_merge($cookies, $cookie);
+    }
+    var_dump($cookies);
+    setcookie("token", $cookies[0]);*/
 
     // This is how we'll know the user is logged in
     $_SESSION['logged_in'] = true;
