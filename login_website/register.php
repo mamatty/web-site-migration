@@ -27,7 +27,14 @@ if(filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $_SESSION['last_name'] = $_POST['lastname'];
         $_SESSION['active'] = 1; //0 until user activates their account with verify.php
         $_SESSION['logged_in'] = true; // So we know the user has logged in
-        setcookie("token", $register['token']);
+        /*preg_match_all('/^Set-Cookie:\s*([^;]*)/mi', $login, $matches);
+          $cookies = array();
+          foreach($matches[1] as $item) {
+              parse_str($item, $cookie);
+              $cookies = array_merge($cookies, $cookie);
+          }
+          var_dump($cookies);
+          setcookie("token", $cookies[0]);*/
 
         header("location: profile.php");
 
