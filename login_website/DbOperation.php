@@ -11,72 +11,125 @@ require_once '../Config.php';
 
 class DbOperation{
 
-    public function login($email, $password, $token){
+    public function login($email, $password){
 
         $data = array(
           'email' => $email,
-          'password' => $password,
-          'token' => $token
+          'password' => $password
         );
 
-        $options = array(
-            'http' => array(
-                'header'  => array(
-                    "Content-type: application/x-www-form-urlencoded",
-                ),
-                'method' => 'GET',
-                'content' => http_build_query($data)
-            )
+        $header = array(
+            "Content-type: application/json"
         );
-        $context = stream_context_create($options);
 
-        $sFile = file_get_contents(LOGIN, False, $context);
+        //Initializing curl to open a connection
+        $ch = curl_init();
 
-        return $sFile;
+        //Setting the curl url
+        curl_setopt($ch, CURLOPT_URL, LOGIN);
+
+        //setting the method as post
+        curl_setopt($ch, CURLOPT_POST, true);
+
+        //adding headers
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        # sending cookies from file
+        curl_setopt($ch, CURLOPT_COOKIEFILE, $_COOKIE["app-id"]);
+
+        //disabling ssl support
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
+        //adding the fields in json format
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+
+        //finally executing the curl request
+        $result = curl_exec($ch);
+
+        //Now close the connection
+        curl_close($ch);
+
+        return $result;
     }
 
-    public function logout($tokens){
+    public function logout(){
 
-        $options = array(
-            'http' => array(
-                'header'  => array(
-                    "Content-type: application/x-www-form-urlencoded"
-                ),
-                'method' => 'GET',
-                'content' => http_build_query($tokens)
-            )
+        $header = array(
+            "Content-type: application/json"
         );
-        $context = stream_context_create($options);
 
-        $sFile = file_get_contents(LOGOUT, False, $context);
+        //Initializing curl to open a connection
+        $ch = curl_init();
 
-        return $sFile;
+        //Setting the curl url
+        curl_setopt($ch, CURLOPT_URL, LOGIN);
+
+        //setting the method as post
+        curl_setopt($ch, CURLOPT_POST, true);
+
+        //adding headers
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        # sending cookies from file
+        #curl_setopt($ch, CURLOPT_COOKIEFILE, array($_COOKIE["app-id"], $_COOKIE["token"]));
+        curl_setopt($ch, CURLOPT_COOKIE, "app-id=".$_COOKIE['app-id'].';token='.$_COOKIE['token']);
+
+        //disabling ssl support
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
+        //finally executing the curl request
+        $result = curl_exec($ch);
+
+        //Now close the connection
+        curl_close($ch);
+
+        return $result;
     }
 
-    public function register_account($token,$email, $first_name, $last_name, $password){
+    public function register_account($email, $first_name, $last_name, $password){
 
         $data = array(
-            'token' => $token,
             'email' => $email,
             'password' => $password,
             'first_name' => $first_name,
             'last_name' => $last_name
         );
 
-        $options = array(
-            'http' => array(
-                'header'  => array(
-                    "Content-type: application/x-www-form-urlencoded"
-                ),
-                'method' => 'POST',
-                'content' => http_build_query($data)
-            )
+        $header = array(
+            "Content-type: application/json"
         );
-        $context = stream_context_create($options);
 
-        $sFile = file_get_contents(REGISTER, False, $context);
+        //Initializing curl to open a connection
+        $ch = curl_init();
 
-        return $sFile;
+        //Setting the curl url
+        curl_setopt($ch, CURLOPT_URL, REGISTER);
+
+        //setting the method as post
+        curl_setopt($ch, CURLOPT_POST, true);
+
+        //adding headers
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        # sending cookies from file
+        curl_setopt($ch, CURLOPT_COOKIEFILE, $_COOKIE["app-id"]);
+
+        //disabling ssl support
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
+        //adding the fields in json format
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+
+        //finally executing the curl request
+        $result = curl_exec($ch);
+
+        //Now close the connection
+        curl_close($ch);
+
+        return $result;
     }
 
     //cryting for the authentication token

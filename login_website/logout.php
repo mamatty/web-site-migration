@@ -14,7 +14,7 @@ session_start();
   require_once "DbOperation.php";
 
   $conn = new DbOperation();
-  $req = $conn-> logout($_SESSION['cookie']);
+  $req = $conn-> logout();
   $logout = json_decode($req,True);
   if($logout['status'] = 'successful'){
       session_unset();
@@ -48,7 +48,5 @@ session_start();
     <?php
   }
   ?>
-
-
 
 </html>
