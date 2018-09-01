@@ -270,9 +270,6 @@ class CustomAccountManagerMobileWev(CustomerAccountManagerBase):
 
                 return self.to_json(user_array)
 
-        #@Marco
-        #Domanda: qua non dovrei passare un parametro? In particolare la variabile con dentro il token e il cookie 
-        #in modo che tu possa riconoscere l'utente? 
         def account_profile():
             # check if the user and the application are allowed to access the service
             if not self.check_application_is_allowed() and not self.check_logged_user():
@@ -570,29 +567,6 @@ class CustomAccountManagerMobileWev(CustomerAccountManagerBase):
 
                 return self.to_json(message_array)
 
-        #Al momento lo lascio. Con Sergio abbiamo pensato ad un modo per evitare questa chiamata. Entro domani (31/08/2018) provvedo.
-        def get_all_tokens():
-            # check if the user and the application are allowed to access the service
-            if not self.check_application_is_allowed():
-                raise cherrypy.HTTPError(401, "Not allowed to access the service!")
-               
-            query = f"SELECT token_firebase FROM user"
-
-            response = self.db_perform_query(query, single_res=False)
-
-            if response is None:
-                return json.dumps({"status": "not-found"})
-            else:
-                token_array = []
-                for res in response:
-
-                    token_json = {
-                        "tokens": res[0]
-                    }
-                    token_array.append(token_json)
-
-                return self.to_json(token_array)
-
         def read_one_message(p):
             # check if the user and the application are allowed to access the service
             if not self.check_application_is_allowed():
@@ -622,13 +596,6 @@ class CustomAccountManagerMobileWev(CustomerAccountManagerBase):
                 }
                 return self.to_json(message_json)
 
-        #@Marco
-        #Osservazione: Qui non abbiamo nessun tipo di controllo sui parametri che ti passo ad ogni chiamata
-        #(cookie e token di autenticazione). Anche se l'utente non è abilitato ad eseguire l'operazione di 
-        #logout, il sistema farà la pop su un token inesistente e poi ritornerà "status": "successful".
-        #Domanda: Anche in questo caso vi è una gestione interna di questa eventualità, come per esempio
-        #nel caso delle query (anche se lì è una gestione dell'errore)? Se non viene eseguita la pop di 
-        #un account ho modo di saperlo?
         def account_logout():
             self.logged_users.pop(self.get_token_cookie())
             return json.dumps({"status": "successful"})
@@ -661,7 +628,6 @@ class CustomAccountManagerMobileWev(CustomerAccountManagerBase):
             "send_messages/read_messages": read_messages(params),
             "send_messages/read_one_message": read_one_message(params),
             "send_messages/search": search_message(params),
-            "send_messages/get_all_tokens":get_all_tokens(),
             "account/logout": account_logout(),
             "account/is_logged": is_logged(),
             "account/profile": account_profile()

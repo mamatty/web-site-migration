@@ -8,8 +8,8 @@ headers_post = {
     'Content-Type': 'application/x-www-form-urlencoded'
 }
 #questi sono valori statici. Passare qua i valori ottenuti dalla rasp
-temp = 15
-humidity = 7
+temp = 20
+humidity = 20
 data = 'api_key=DNBQVGCP1QCJVQ6T&field1='+str(temp)+'&field2='+str(humidity)
 
 r_post = requests.post(url_post, headers=headers_post, params=data)
@@ -27,6 +27,7 @@ if r_post.status_code == 200:
     data = 'api_key=0FUJJDZFVYDH2PLB'
 
     r_get = requests.get(url_get, headers=headers_get, params=data)
+    print(r_get.json())
 
     if r_get.status_code == 200:
         wjson = r_get.json()
