@@ -16,21 +16,40 @@ class DbOperation{
           'title' => $title
         );
 
-        $options = array(
-            'http' => array(
-                'header'  => array(
-                    "Content-type: application/x-www-form-urlencoded",
-                    "Authorization: "
-                ),
-                'method' => 'GET',
-                'content' => http_build_query($data)
-            )
+        $header = array(
+            "Content-type: application/json"
         );
-        $context = stream_context_create($options);
 
-        $sFile = file_get_contents(AUTOCOMPLETE_MESSAGE, False, $context);
+        $params = http_build_query($data);
+        $getUrl = AUTOCOMPLETE_MESSAGE."?".$params;
 
-        return $sFile;
+        //Initializing curl to open a connection
+        $ch = curl_init();
+
+        //Setting the curl url
+        curl_setopt($ch, CURLOPT_URL, $getUrl);
+
+        //setting the method as get
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+
+        //adding headers
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        # sending cookies from file
+        #curl_setopt($ch, CURLOPT_COOKIEFILE, array($_COOKIE["app-id"], $_COOKIE["token"]));
+        curl_setopt($ch, CURLOPT_COOKIE, "app-id=".$_COOKIE['app-id'].';token='.$_COOKIE['token']);
+
+        //disabling ssl support
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
+        //finally executing the curl request
+        $result = curl_exec($ch);
+
+        //Now close the connection
+        curl_close($ch);
+
+        return $result;
     }
 
     public function create_message($title, $body, $send_date, $destination){
@@ -42,21 +61,40 @@ class DbOperation{
             'destination' => $destination
         );
 
-        $options = array(
-            'http' => array(
-                'header'  => array(
-                    "Content-type: application/x-www-form-urlencoded",
-                    "Authorization: "
-                ),
-                'method' => 'POST',
-                'content' => http_build_query($data)
-            )
+        $header = array(
+            "Content-type: application/json"
         );
-        $context = stream_context_create($options);
 
-        $sFile = file_get_contents(CREATE_MESSAGE, False, $context);
+        //Initializing curl to open a connection
+        $ch = curl_init();
 
-        return $sFile;
+        //Setting the curl url
+        curl_setopt($ch, CURLOPT_URL, CREATE_MESSAGE);
+
+        //setting the method as post
+        curl_setopt($ch, CURLOPT_POST, true);
+
+        //adding headers
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        # sending cookies from file
+        #curl_setopt($ch, CURLOPT_COOKIEFILE, array($_COOKIE["app-id"], $_COOKIE["token"]));
+        curl_setopt($ch, CURLOPT_COOKIE, "app-id=".$_COOKIE['app-id'].';token='.$_COOKIE['token']);
+
+        //disabling ssl support
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
+        //adding the fields in json format
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+
+        //finally executing the curl request
+        $result = curl_exec($ch);
+
+        //Now close the connection
+        curl_close($ch);
+
+        return $result;
     }
 
     public function read_messages($records_per_page, $from_record_num){
@@ -66,21 +104,40 @@ class DbOperation{
             'from_record_num' => $from_record_num
         );
 
-        $options = array(
-            'http' => array(
-                'header'  => array(
-                    "Content-type: application/x-www-form-urlencoded",
-                    "Authorization: "
-                ),
-                'method' => 'GET',
-                'content' => http_build_query($data)
-            )
+        $header = array(
+            "Content-type: application/json"
         );
-        $context = stream_context_create($options);
 
-        $sFile = file_get_contents(READ_MESSAGES, False, $context);
+        $params = http_build_query($data);
+        $getUrl = READ_MESSAGES."?".$params;
 
-        return $sFile;
+        //Initializing curl to open a connection
+        $ch = curl_init();
+
+        //Setting the curl url
+        curl_setopt($ch, CURLOPT_URL, $getUrl);
+
+        //setting the method as get
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+
+        //adding headers
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        # sending cookies from file
+        #curl_setopt($ch, CURLOPT_COOKIEFILE, array($_COOKIE["app-id"], $_COOKIE["token"]));
+        curl_setopt($ch, CURLOPT_COOKIE, "app-id=".$_COOKIE['app-id'].';token='.$_COOKIE['token']);
+
+        //disabling ssl support
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
+        //finally executing the curl request
+        $result = curl_exec($ch);
+
+        //Now close the connection
+        curl_close($ch);
+
+        return $result;
     }
 
     public function read_one_message($id){
@@ -89,21 +146,40 @@ class DbOperation{
             'id' => $id
         );
 
-        $options = array(
-            'http' => array(
-                'header'  => array(
-                    "Content-type: application/x-www-form-urlencoded",
-                    "Authorization: "
-                ),
-                'method' => 'GET',
-                'content' => http_build_query($data)
-            )
+        $header = array(
+            "Content-type: application/json"
         );
-        $context = stream_context_create($options);
 
-        $sFile = file_get_contents(READ_ONE_MESSAGE, False, $context);
+        $params = http_build_query($data);
+        $getUrl = READ_ONE_MESSAGE."?".$params;
 
-        return $sFile;
+        //Initializing curl to open a connection
+        $ch = curl_init();
+
+        //Setting the curl url
+        curl_setopt($ch, CURLOPT_URL, $getUrl);
+
+        //setting the method as get
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+
+        //adding headers
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        # sending cookies from file
+        #curl_setopt($ch, CURLOPT_COOKIEFILE, array($_COOKIE["app-id"], $_COOKIE["token"]));
+        curl_setopt($ch, CURLOPT_COOKIE, "app-id=".$_COOKIE['app-id'].';token='.$_COOKIE['token']);
+
+        //disabling ssl support
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
+        //finally executing the curl request
+        $result = curl_exec($ch);
+
+        //Now close the connection
+        curl_close($ch);
+
+        return $result;
     }
 
     public function search_message($title, $records_per_page, $from_record_num){
@@ -114,39 +190,39 @@ class DbOperation{
             'from_record_num' => $from_record_num
         );
 
-        $options = array(
-            'http' => array(
-                'header'  => array(
-                    "Content-type: application/x-www-form-urlencoded",
-                    "Authorization: "
-                ),
-                'method' => 'GET',
-                'content' => http_build_query($data)
-            )
+        $header = array(
+            "Content-type: application/json"
         );
-        $context = stream_context_create($options);
 
-        $sFile = file_get_contents(SEARCH_MESSAGE, False, $context);
+        $params = http_build_query($data);
+        $getUrl = SEARCH_MESSAGE."?".$params;
 
-        return $sFile;
+        //Initializing curl to open a connection
+        $ch = curl_init();
+
+        //Setting the curl url
+        curl_setopt($ch, CURLOPT_URL, $getUrl);
+
+        //setting the method as get
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'GET');
+
+        //adding headers
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+
+        # sending cookies from file
+        #curl_setopt($ch, CURLOPT_COOKIEFILE, array($_COOKIE["app-id"], $_COOKIE["token"]));
+        curl_setopt($ch, CURLOPT_COOKIE, "app-id=".$_COOKIE['app-id'].';token='.$_COOKIE['token']);
+
+        //disabling ssl support
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+
+        //finally executing the curl request
+        $result = curl_exec($ch);
+
+        //Now close the connection
+        curl_close($ch);
+
+        return $result;
     }
-
-    public function getAllTokens(){
-
-        $options = array(
-            'http' => array(
-                'header'  => array(
-                    "Content-type: application/x-www-form-urlencoded",
-                    "Authorization: "
-                ),
-                'method' => 'GET'
-            )
-        );
-        $context = stream_context_create($options);
-
-        $sFile = file_get_contents(GET_ALL_TOKENS, False, $context);
-
-        return $sFile;
-    }
-
 }

@@ -87,31 +87,36 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
             $argument = $_POST['argument'];
         }
 
-        $now = new DateTime();
-        $attuale = $now;
-        $datatime = $attuale->format('Y/m/d');
-
-        $req = $conn->create_message($title,$body,$datatime, $destination);
-        $mes = json_decode($req, True);
-        if($mes['status'] == 'successful'){
-            echo "<div class='alert alert-success'>Message has been saved.</div>";
-            $load = true;
-        }else{
-            echo "<div class='alert alert-danger'>Unable to save the message. Please try again.</div>";
+        if(empty($title)){
+            echo "<div class='alert alert-success'>Title not inserted!</div>";
         }
+        else{
+            $now = new DateTime();
+            $attuale = $now;
+            $datatime = $attuale->format('Y-m-d');
 
-        if ($load == true){
-            $result = $send -> sendNotification($title, $body, $destination, $argument);
-            if (isset($result['error']) != true){
-                echo "<div class='alert alert-success'>Message has been sent.</div>";
+            $req = $conn->create_message($title,$body,$datatime, $destination);
+            $mes = json_decode($req, True);
+            if($mes['status'] == 'successful'){
+                echo "<div class='alert alert-success'>Message has been saved.</div>";
+                $load = true;
             }else{
-                echo "<div class='alert alert-success'>".$result['message']."</div>";
+                echo "<div class='alert alert-danger'>Unable to save the message. Please try again.</div>";
+            }
+
+            if ($load == true){
+                $result = $send -> sendNotification($title, $body, $destination, $argument);
+                if (isset($result['error']) != true){
+                    echo "<div class='alert alert-success'>Message has been sent.</div>";
+                }else{
+                    echo "<div class='alert alert-success'>".$result['message']."</div>";
+                }
             }
         }
     }
 
     ?>
-    <!-- html form here where the product information will be entered -->
+    <!-- html form here where the message information will be entered -->
 
     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]);?>" method="post" enctype="multipart/form-data">
         <table class='table table-hover table-responsive table-bordered'>
