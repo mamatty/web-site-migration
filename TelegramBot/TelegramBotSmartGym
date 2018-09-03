@@ -137,12 +137,19 @@ def on_chat_message(msg):
                 bot.sendMessage(chat_id, "Error in retrieving humidity")
                 return
 
+        elif msg['text'] == '/help':
+            bot.sendMessage(chat_id, 'List of available commands:\n'
+                            '/get_temperature - retrieve the actual temperature inside the gym \n'
+                            '/get_humidity - retrieve the actual humidity inside the gym \n'
+                            '/get_today_temperature - retrieve the mean value of the temperature of the current day \n'
+                            '/get_today_humidity - retrieve the mean value of the humidity of the current day \n')
+
         else:
-            bot.sendMessage(chat_id, 'Command not found!')
+            bot.sendMessage(chat_id, 'Command not found! See /help for the list of available commands')
             return
 
     else:
-        bot.sendMessage(chat_id, 'Command not valid!')
+        bot.sendMessage(chat_id, 'Command not valid! See /help for the list of available commands')
         return
 
 if __name__ == '__main__':
