@@ -1,0 +1,158 @@
+import telepot
+import json
+import requests
+import numpy
+import time
+
+def retrieve_data(msg):
+
+    content_type, chat_type, chat_id = telepot.glance(msg)
+
+    # Getting data from ThingSpeak
+    url_get = "http://api.thingspeak.com/channels/565919/feed.json"
+    headers_get = {
+        'host': 'api.thingspeak.com',
+        'Connection': 'close'
+    }
+
+    data = 'api_key=0FUJJDZFVYDH2PLB'
+
+    try:
+        r_get = requests.get(url_get, headers=headers_get, params=data)
+        temp = []
+        humidity = []
+
+        if r_get.status_code == 200:
+            wjson = r_get.json()
+
+            for res in wjson['feeds']:
+
+                if res['field1'] is not None:
+                    date = res['created_at'].split('T')[0]
+
+                    results_tm = {
+                        'value': res['field1'],
+                        'date': date
+                    }
+
+                    temp.append(results_tm)
+
+                if res['field2'] is not None:
+                    date = res['created_at'].split('T')[0]
+
+                    results_tm = {
+                        'value': res['field2'],
+                        'date': date
+                    }
+
+                    humidity.append(results_tm)
+
+            return temp, humidity
+
+        else:
+            bot.sendMessage(chat_id, 'Error on GET request!')
+
+    except requests.exceptions.RequestException:
+        bot.sendMessage(chat_id, 'Problem in ThingSpeak Connection!')
+
+def mean_values(data):
+
+    date = time.strftime("%Y-%m-%d")
+    sum = 0
+    count = 0
+
+    for x in data:
+        if x['date'] == date:
+            sum = sum + int(x['value'])
+            count = count + 1
+
+    try:
+        return sum/count
+    except ZeroDivisionError:
+        return 0
+
+def on_chat_message(msg):
+
+    content_type, chat_type, chat_id = telepot.glance(msg)
+
+    if content_type == 'text' and msg['text'][0] == '/':
+
+        [temp, humidity] = retrieve_data(msg)
+        date = time.strftime("%Y-%m-%d")
+
+        if msg['text'] == '/start':
+            bot.sendMessage(chat_id, 'Welcome to the SmartGym Telegram Bot! Description above.')
+
+        elif msg['text'] == '/get_temperature':
+            try:
+                if temp[-1]['value'] is not None:
+                    bot.sendMessage(chat_id, 'The actual temperature is: '+str(temp[-1]['value'])+'°C')
+                    return
+                else:
+                    bot.sendMessage(chat_id, 'No temperature measurement are available!')
+                    return
+
+            except Exception:
+                bot.sendMessage(chat_id, "Error in retrieving temperature")
+                return
+
+        elif msg['text'] == '/get_humidity':
+            try:
+                if humidity[-1]['value'] is not None:
+                    bot.sendMessage(chat_id, 'The actual humidity is: '+str(humidity[-1]['value'])+'g/m³')
+                    return
+                else:
+                    bot.sendMessage(chat_id, 'No humidity measurement are available!')
+                    return
+
+            except Exception:
+                bot.sendMessage(chat_id, "Error in retrieving humidity")
+                return
+
+        elif msg['text'] == '/get_today_temperature':
+            try:
+                mean_temp = mean_values(temp)
+                if mean_temp != 0:
+                    bot.sendMessage(chat_id, 'Today '+str(date)+' the mean temperature is: '+str(mean_temp)+'°C')
+                    return
+                else:
+                    bot.sendMessage(chat_id, 'No temperature measurement are available!')
+                    return
+
+            except Exception:
+                bot.sendMessage(chat_id, "Error in retrieving temperature")
+                return
+
+        elif msg['text'] == '/get_today_humidity':
+            try:
+                mean_hum = mean_values(temp)
+                if mean_hum != 0:
+                    bot.sendMessage(chat_id, 'Today ' + str(date) + ' the mean humidity is: ' + str(mean_hum)+'g/m³')
+                    return
+                else:
+                    bot.sendMessage(chat_id, 'No temperature measurement are available!')
+                    return
+
+            except Exception:
+                bot.sendMessage(chat_id, "Error in retrieving humidity")
+                return
+
+        else:
+            bot.sendMessage(chat_id, 'Command not found!')
+            return
+
+    else:
+        bot.sendMessage(chat_id, 'Command not valid!')
+        return
+
+if __name__ == '__main__':
+
+    TOKEN = '646582205:AAFlbTsmkAwz6gfY0YBc6FvsmnKxZxgNJQE'
+
+    bot = telepot.Bot(TOKEN)
+    bot.message_loop(on_chat_message)
+
+    print('Listening ...')
+
+    while 1:
+        time.sleep(10)
