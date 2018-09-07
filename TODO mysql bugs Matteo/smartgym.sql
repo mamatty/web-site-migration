@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Set 07, 2018 alle 00:17
+-- Creato il: Set 07, 2018 alle 15:31
 -- Versione del server: 10.1.34-MariaDB
 -- Versione PHP: 7.0.31
 
@@ -59,7 +59,7 @@ CREATE TABLE `exercise` (
   `id_exercise` int(11) NOT NULL,
   `name` text NOT NULL,
   `description` text NOT NULL,
-  `muscolar_zone` text NOT NULL,
+  `muscular_zone` text NOT NULL,
   `url` varchar(250) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -67,7 +67,7 @@ CREATE TABLE `exercise` (
 -- Dump dei dati per la tabella `exercise`
 --
 
-INSERT INTO `exercise` (`id_exercise`, `name`, `description`, `muscolar_zone`, `url`) VALUES
+INSERT INTO `exercise` (`id_exercise`, `name`, `description`, `muscular_zone`, `url`) VALUES
 (1, 'distensioni con bilancere su panca', 'qualcosa', 'petto', 'prova'),
 (2, 'distensioni con manubri su panca inclinata', 'qualcosa1', 'petto', ''),
 (3, 'butterfly', 'qualcosa2', 'petto', 'prova'),

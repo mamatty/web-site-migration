@@ -40,6 +40,33 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
 
     def GET(self, *uri, **params):
 
+        def read_one_exercise(p):
+            # check if the user and the application are allowed to access the service
+            #self._auth()
+
+            # retrieve parameters
+            id_exercise = p.get("id", None)
+            check_mandatory_parameters([id_exercise], ["id"])
+
+            # perform the query
+            query = "SELECT name, description, muscular_zone " \
+                    "FROM exercise " \
+                    "WHERE id_exercise = ?"
+            response = self.db_perform_query(query, (id_exercise,), single_res=True)
+
+            # check the exercise exists
+            if response is None:
+                return json.dumps({"status": kSTATUS_ERR})
+            else:
+                # final result
+                exercise_json = {
+                    "status": kSTATUS_OK,
+                    "name": response[0],
+                    "description": response[1],
+                    "muscular_zone": response[2]
+                }
+                return self.to_json(exercise_json)
+
         def autocomplete(p, query, dict_key):
             # check application can access the service
             self._auth()
@@ -286,33 +313,6 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
                 }
                 return self.to_json(res)
 
-        def read_one_exercise(p):
-            # check if the user and the application are allowed to access the service
-            self._auth()
-
-            # retrieve parameters
-            id_exercise = p.get("id", None)
-            check_mandatory_parameters([id_exercise], ["id"])
-
-            # perform the query
-            query = "SELECT name, description, muscular_zone " \
-                    "FROM exercise " \
-                    "WHERE id_exercise = ?"
-            response = self.db_perform_query(query, (id_exercise,), single_res=True)
-
-            # check the exercise exists
-            if response is None:
-                return json.dumps({"status": kSTATUS_ERR})
-            else:
-                # final result
-                exercise_json = {
-                    "status": kSTATUS_OK,
-                    "name": response[0],
-                    "description": response[1],
-                    "muscular_zone": response[2]
-                }
-                return self.to_json(exercise_json)
-
         def search_exercise_list(p):
             # check if the user and the application are allowed to access the service
             self._auth()
@@ -431,6 +431,7 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
                     "WHERE name = ?"
             query_params = (name,)
             id_exercise = self.db_perform_query(query, query_params, single_res=True)
+
             # check the exercise has been updated
             if id_exercise is None:
                 return json.dumps({"status": kSTATUS_ERR})
@@ -447,14 +448,22 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
                 return json.dumps({"status": kSTATUS_ERR})
 
             # final result
-            look_updated_exercise(id_list, id_exercise)
+            look_updated_exercise({'id_list':id_list, 'id_exercise':id_exercise, 'status': kSTATUS_OK})
 
-        def look_updated_exercise(id_list, id_exercise):
+        def look_updated_exercise(p):
             # TODO: instead of performing the queries, I think you can directly return the values you have written in DB
             # @Giorgio: This is a method that i call also when I open the page for the update, in order to show the exercise informations.
             # If I pass the parameters directly with the response, anyway I have to create a new method to obtain the informations.
             # At the end is the same thing, but this approach is probably better in my opinion.
             # retrieve exercise schedule info
+            # check if the user and the application are allowed to access the service
+            if 'status' not in p:
+                self._auth()
+
+            id_list = p.get("id_list", None)
+            id_exercise = p.get("id_exercise", None)
+            check_mandatory_parameters([id_list,  id_exercise],["id_list", "id_exercise"])
+
             query = "SELECT id_exercise, day, details, weight, repetitions " \
                     "FROM exercise_schedules " \
                     "WHERE id_list = ?"
@@ -505,12 +514,18 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
             if self.db_manager.row_count() == 0:
                 return json.dumps({"status": kSTATUS_ERR})
             else:
-                look_updated_exercise_list(id_exercise)
+                look_updated_exercise_list({'id_exercise':id_exercise, 'status':kSTATUS_OK})
 
-        def look_updated_exercise_list(id_exercise):
+        def look_updated_exercise_list(p):
             # TODO: instead of performing the query, I think you can directly return the values you have written in DB
             # @Giorgio: same of above
             # retrieve exercise info
+            if 'status' not in p:
+                self._auth()
+
+            id_exercise = p.get("id_exercise", None)
+            check_mandatory_parameters([id_exercise],["id_exercise"])
+
             query = "SELECT name, description, muscular_zone, url " \
                     "FROM exercise " \
                     "WHERE id_exercise = ?"
@@ -538,7 +553,7 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
             check_mandatory_parameters([id_user], ["id"])
 
             # perform the query
-            query = "SELECT id_user, name, surname, email, birth_date, address, image, subscription, end_subscription " \
+            query = "SELECT id_user, name, surname, email, birth_date, address, subscription, end_subscription " \
                     "FROM user " \
                     "WHERE id_user = ?"
             response = self.db_perform_query(query, (id_user,), single_res=True)
@@ -555,9 +570,8 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
                     "email": response[3],
                     "birth_date": response[4],
                     "address": response[5],
-                    "image": response[6],
-                    "subscription": response[7],
-                    "end_subscription": response[8]
+                    "subscription": response[6],
+                    "end_subscription": response[7]
                 }
                 return self.to_json(user_json)
 
@@ -685,13 +699,13 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
             return cherrypy.HTTPError(400, "The URL is not valid")
 
         endpoints = {
+            "manage_schedules/read_one_exercise": read_one_exercise(params),
             "manage_schedules/autocomplete": autocomplete_user(params),
             "manage_schedules/autocomplete_exercise": autocomplete_exercise(params),
             "manage_schedules/manage_schedules": manage_schedules(params),
             "manage_schedules/manage_users": manage_users(params),
             "manage_schedules/manage_exercises": manage_exercises(params),
             "manage_schedules/read_exercises": read_exercises(params),
-            "manage_schedules/read_one_exercise": read_one_exercise(params),
             "manage_schedules/search_user": search_user(params),
             "manage_schedules/search_exercise_list": search_exercise_list(params),
             "manage_schedules/update_exercise": update_exercise(params),
@@ -722,7 +736,7 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
             check_mandatory_parameters([email, password], ["email", "password"])
 
             # perform the query
-            query = "SELECT id_user, first_name, last_name FROM user WHERE email = ? and password = ?"
+            query = "SELECT id, first_name, last_name FROM account WHERE email = ? and password = ?"
             response = self.db_perform_query(query, (email, password), single_res=True)
 
             if response is None:
@@ -1015,15 +1029,23 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
                 # TODO: status was "not-found"
                 return json.dumps({"status": kSTATUS_ERR})
             else:
-                look_updated_user(id_user)
+                look_updated_user({'id_user':id_user,'status':kSTATUS_OK})
 
         # TODO: actually, instead of calling this method you could return directly the updated fresh value
         # @Giorgio: Same of above (for other look_.. methods)
-        def look_updated_user(id_user):
+        def look_updated_user(p):
+
+            if 'status' not in p:
+                self._auth()
+
+            id_user = p.get("id_user", None)
+            check_mandatory_parameters([id_user],["id_user"])
+
+
             # retrieve user fresh information
-            query = "SELECT id_user, name, surname, email, birth_date, address, id_subscription " \
+            query = "SELECT id_user, name, surname, email, birth_date, address, subscription " \
                     "FROM user " \
-                    "WHERE id_user = ?"
+                    "WHERE id_user = ? LIMIT 0,1"
             response = self.db_perform_query(query, (id_user,), single_res=True)
 
             # check the user exists
