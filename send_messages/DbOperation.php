@@ -38,7 +38,11 @@ class DbOperation{
 
         # sending cookies from file
         #curl_setopt($ch, CURLOPT_COOKIEFILE, array($_COOKIE["app-id"], $_COOKIE["token"]));
-        curl_setopt($ch, CURLOPT_COOKIE, "app-id=".$_COOKIE['app-id'].';token='.$_COOKIE['token']);
+        #curl_setopt($ch, CURLOPT_COOKIE, "app-id=".$_COOKIE['app-id'].';token='.$_COOKIE['token']);
+        if(isset($_COOKIE["app-id"]) and isset($_COOKIE["token"])){
+            curl_setopt($ch, CURLOPT_COOKIEFILE, $_COOKIE["app-id"]);
+            curl_setopt($ch, CURLOPT_COOKIEFILE, $_COOKIE["token"]);
+        }
 
         //disabling ssl support
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -80,7 +84,11 @@ class DbOperation{
 
         # sending cookies from file
         #curl_setopt($ch, CURLOPT_COOKIEFILE, array($_COOKIE["app-id"], $_COOKIE["token"]));
-        curl_setopt($ch, CURLOPT_COOKIE, "app-id=".$_COOKIE['app-id'].';token='.$_COOKIE['token']);
+        #curl_setopt($ch, CURLOPT_COOKIE, "app-id=".$_COOKIE['app-id'].';token='.$_COOKIE['token']);
+        if(isset($_COOKIE["app-id"]) and isset($_COOKIE["token"])){
+            curl_setopt($ch, CURLOPT_COOKIEFILE, $_COOKIE["app-id"]);
+            curl_setopt($ch, CURLOPT_COOKIEFILE, $_COOKIE["token"]);
+        }
 
         //disabling ssl support
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -126,7 +134,11 @@ class DbOperation{
 
         # sending cookies from file
         #curl_setopt($ch, CURLOPT_COOKIEFILE, array($_COOKIE["app-id"], $_COOKIE["token"]));
-        curl_setopt($ch, CURLOPT_COOKIE, "app-id=".$_COOKIE['app-id'].';token='.$_COOKIE['token']);
+        #curl_setopt($ch, CURLOPT_COOKIE, "app-id=".$_COOKIE['app-id'].';token='.$_COOKIE['token']);
+        if(isset($_COOKIE["app-id"]) and isset($_COOKIE["token"])){
+            curl_setopt($ch, CURLOPT_COOKIEFILE, $_COOKIE["app-id"]);
+            curl_setopt($ch, CURLOPT_COOKIEFILE, $_COOKIE["token"]);
+        }
 
         //disabling ssl support
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -168,7 +180,11 @@ class DbOperation{
 
         # sending cookies from file
         #curl_setopt($ch, CURLOPT_COOKIEFILE, array($_COOKIE["app-id"], $_COOKIE["token"]));
-        curl_setopt($ch, CURLOPT_COOKIE, "app-id=".$_COOKIE['app-id'].';token='.$_COOKIE['token']);
+        #curl_setopt($ch, CURLOPT_COOKIE, "app-id=".$_COOKIE['app-id'].';token='.$_COOKIE['token']);
+        if(isset($_COOKIE["app-id"]) and isset($_COOKIE["token"])){
+            curl_setopt($ch, CURLOPT_COOKIEFILE, $_COOKIE["app-id"]);
+            curl_setopt($ch, CURLOPT_COOKIEFILE, $_COOKIE["token"]);
+        }
 
         //disabling ssl support
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
@@ -212,7 +228,11 @@ class DbOperation{
 
         # sending cookies from file
         #curl_setopt($ch, CURLOPT_COOKIEFILE, array($_COOKIE["app-id"], $_COOKIE["token"]));
-        curl_setopt($ch, CURLOPT_COOKIE, "app-id=".$_COOKIE['app-id'].';token='.$_COOKIE['token']);
+        #curl_setopt($ch, CURLOPT_COOKIE, "app-id=".$_COOKIE['app-id'].';token='.$_COOKIE['token']);
+        if(isset($_COOKIE["app-id"]) and isset($_COOKIE["token"])){
+            curl_setopt($ch, CURLOPT_COOKIEFILE, $_COOKIE["app-id"]);
+            curl_setopt($ch, CURLOPT_COOKIEFILE, $_COOKIE["token"]);
+        }
 
         //disabling ssl support
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);

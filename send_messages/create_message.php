@@ -88,10 +88,12 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
         }
 
         if(empty($title)){
-            echo "<div class='alert alert-success'>Title not inserted!</div>";
+            echo "<div class='alert alert-danger'>Title not inserted!</div>";
         }
         else{
-            $now = new DateTime();
+
+            $load = true;
+            /*$now = new DateTime();
             $attuale = $now;
             $datatime = $attuale->format('Y-m-d');
 
@@ -99,17 +101,17 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
             $mes = json_decode($req, True);
             if($mes['status'] == 'successful'){
                 echo "<div class='alert alert-success'>Message has been saved.</div>";
-                $load = true;
+
             }else{
                 echo "<div class='alert alert-danger'>Unable to save the message. Please try again.</div>";
-            }
+            }*/
 
             if ($load == true){
                 $result = $send -> sendNotification($title, $body, $destination, $argument);
                 if (isset($result['error']) != true){
                     echo "<div class='alert alert-success'>Message has been sent.</div>";
                 }else{
-                    echo "<div class='alert alert-success'>".$result['message']."</div>";
+                    echo "<div class='alert alert-danger'>".$result['message']."</div>";
                 }
             }
         }
@@ -140,7 +142,7 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
             <tr>
                 <td>Argument</td>
                 <td>
-                    <select id="argument" >
+                    <select id="argument" name="argument">
                         <option value="0"> -- </option>
                     </select>
                 </td>
@@ -174,9 +176,8 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
 <script type="text/javascript">
 
     let list = new Array(2);
-    list["token"] = [" -- "];
-    list["multicast"] = [" -- "];
-    list["topic"] = ["Notifications", "Something"];
+    list["all"] = [" -- "];
+    list["topic"] = ["Notizie", "Avvisi", "Promozioni"];
 
     function destinationChange(selectObj) {
 
