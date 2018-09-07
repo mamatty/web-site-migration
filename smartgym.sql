@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Ago 28, 2018 alle 19:30
+-- Creato il: Set 07, 2018 alle 15:31
 -- Versione del server: 10.1.34-MariaDB
 -- Versione PHP: 7.0.31
 
@@ -59,7 +59,7 @@ CREATE TABLE `exercise` (
   `id_exercise` int(11) NOT NULL,
   `name` text NOT NULL,
   `description` text NOT NULL,
-  `muscolar_zone` text NOT NULL,
+  `muscular_zone` text NOT NULL,
   `url` varchar(250) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -67,7 +67,7 @@ CREATE TABLE `exercise` (
 -- Dump dei dati per la tabella `exercise`
 --
 
-INSERT INTO `exercise` (`id_exercise`, `name`, `description`, `muscolar_zone`, `url`) VALUES
+INSERT INTO `exercise` (`id_exercise`, `name`, `description`, `muscular_zone`, `url`) VALUES
 (1, 'distensioni con bilancere su panca', 'qualcosa', 'petto', 'prova'),
 (2, 'distensioni con manubri su panca inclinata', 'qualcosa1', 'petto', ''),
 (3, 'butterfly', 'qualcosa2', 'petto', 'prova'),
@@ -82,31 +82,32 @@ INSERT INTO `exercise` (`id_exercise`, `name`, `description`, `muscolar_zone`, `
 -- --------------------------------------------------------
 
 --
--- Struttura della tabella `exercise_list`
+-- Struttura della tabella `exercise_schedules`
 --
 
-CREATE TABLE `exercise_list` (
+CREATE TABLE `exercise_schedules` (
   `id_list` int(11) NOT NULL,
   `id_schedule` int(11) NOT NULL,
   `id_exercise` int(11) NOT NULL,
   `day` int(11) NOT NULL DEFAULT '1',
-  `ripetitions` int(11) NOT NULL,
+  `repetitions` int(11) NOT NULL,
   `weight` float NOT NULL,
   `details` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dump dei dati per la tabella `exercise_list`
+-- Dump dei dati per la tabella `exercise_schedules`
 --
 
-INSERT INTO `exercise_list` (`id_list`, `id_schedule`, `id_exercise`, `day`, `ripetitions`, `weight`, `details`) VALUES
+INSERT INTO `exercise_schedules` (`id_list`, `id_schedule`, `id_exercise`, `day`, `repetitions`, `weight`, `details`) VALUES
 (2, 2, 1, 3, 2, 15, 'qualcosa'),
 (3, 6, 1, 1, 5, 18, 'frf'),
 (4, 6, 2, 1, 11, 14, 'ffff'),
 (5, 5, 5, 3, 11, 18, 'ddd'),
-(6, 7, 1, 1, 1, 15, 'ddd'),
-(7, 7, 7, 7, 22, 12, 'qqq'),
-(8, 7, 10, 2, 2, 20, 'frf');
+(8, 7, 10, 2, 2, 20, 'frf'),
+(10, 7, 1, 2, 5, 14, 'frf'),
+(11, 7, 1, 1, 11, 18, 'ddd'),
+(12, 7, 4, 2, 5, 18, 'ge');
 
 -- --------------------------------------------------------
 
@@ -118,7 +119,6 @@ CREATE TABLE `messages` (
   `id_message` int(11) NOT NULL,
   `title` text NOT NULL,
   `body` text NOT NULL,
-  `image` text NOT NULL,
   `send_date` date NOT NULL,
   `destination` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -127,25 +127,25 @@ CREATE TABLE `messages` (
 -- Dump dei dati per la tabella `messages`
 --
 
-INSERT INTO `messages` (`id_message`, `title`, `body`, `image`, `send_date`, `destination`) VALUES
-(1, 'r', 'rr', '', '2018-04-23', 'Multicast'),
-(2, 'nol', 'nilnj', '', '2018-04-28', 'Multicast'),
-(3, 'ciaoq', 'come va', '', '2018-05-10', 'Multicast'),
-(4, '', '', '', '2018-05-10', 'All'),
-(5, 'prova', 'cdeoicj', '', '2018-08-28', 'All'),
-(6, 'aiuto', 'vjvjv', '', '2018-08-28', 'All'),
-(7, 'vvvv', 'vvvv', '', '2018-08-28', 'All'),
-(8, 'vai', 'forza', '', '2018-08-28', 'All'),
-(9, 'prova', 'vrev', '', '2018-08-28', 'All'),
-(10, 'prova', 'j,nh', '', '2018-08-28', 'All'),
-(11, 'prova', 'j,nh', '', '2018-08-28', 'All'),
-(12, 'kjb ', 'lkhj', '', '2018-08-28', 'All'),
-(13, 'knhl', 'lkj', '', '2018-08-28', 'All'),
-(14, 'ihouh', 'lkji', '', '2018-08-28', 'Multicast'),
-(15, 'lknj', 'jn', '', '2018-08-28', 'Array'),
-(16, 'aiuto', 'ewfw', '', '2018-08-28', 'topic'),
-(17, 'gg', 'ggg', '', '2018-08-28', 'all'),
-(18, 'vv', 'ff', '', '2018-08-28', 'topic');
+INSERT INTO `messages` (`id_message`, `title`, `body`, `send_date`, `destination`) VALUES
+(1, 'r', 'rr', '2018-04-23', 'Multicast'),
+(2, 'nol', 'nilnj', '2018-04-28', 'Multicast'),
+(3, 'ciaoq', 'come va', '2018-05-10', 'Multicast'),
+(4, '', '', '2018-05-10', 'All'),
+(5, 'prova', 'cdeoicj', '2018-08-28', 'All'),
+(6, 'aiuto', 'vjvjv', '2018-08-28', 'All'),
+(7, 'vvvv', 'vvvv', '2018-08-28', 'All'),
+(8, 'vai', 'forza', '2018-08-28', 'All'),
+(9, 'prova', 'vrev', '2018-08-28', 'All'),
+(10, 'prova', 'j,nh', '2018-08-28', 'All'),
+(11, 'prova', 'j,nh', '2018-08-28', 'All'),
+(12, 'kjb ', 'lkhj', '2018-08-28', 'All'),
+(13, 'knhl', 'lkj', '2018-08-28', 'All'),
+(14, 'ihouh', 'lkji', '2018-08-28', 'Multicast'),
+(15, 'lknj', 'jn', '2018-08-28', 'Array'),
+(16, 'aiuto', 'ewfw', '2018-08-28', 'topic'),
+(17, 'gg', 'ggg', '2018-08-28', 'all'),
+(18, 'vv', 'ff', '2018-08-28', 'topic');
 
 -- --------------------------------------------------------
 
@@ -167,7 +167,6 @@ CREATE TABLE `room` (
 CREATE TABLE `schedules` (
   `id_schedule` int(11) NOT NULL,
   `id_user` int(11) NOT NULL,
-  `token_auth` varchar(100) NOT NULL,
   `name` varchar(100) DEFAULT NULL,
   `details` varchar(250) NOT NULL,
   `start_date` date DEFAULT NULL,
@@ -180,10 +179,10 @@ CREATE TABLE `schedules` (
 -- Dump dei dati per la tabella `schedules`
 --
 
-INSERT INTO `schedules` (`id_schedule`, `id_user`, `token_auth`, `name`, `details`, `start_date`, `end_date`, `num_days`, `objective`) VALUES
-(5, 1, '', 'vdf', 'efv', '2018-05-05', '2018-05-05', 5, 'efv'),
-(6, 5, '', 'prova', 'ddd', '2020-02-10', '2021-02-10', 3, 'qualcosa'),
-(7, 2, '', 'prova', 'ge', '2020-02-10', '2020-03-10', 3, 'qualcosa');
+INSERT INTO `schedules` (`id_schedule`, `id_user`, `name`, `details`, `start_date`, `end_date`, `num_days`, `objective`) VALUES
+(5, 1, 'vdf', 'efv', '2018-05-05', '2018-05-05', 5, 'efv'),
+(6, 5, 'prova', 'ddd', '2020-02-10', '2021-02-10', 3, 'qualcosa'),
+(7, 2, 'prova', 'ge', '2020-02-10', '2020-03-10', 3, 'qualcosa');
 
 -- --------------------------------------------------------
 
@@ -218,25 +217,25 @@ CREATE TABLE `user` (
   `id_user` int(11) NOT NULL,
   `name` text NOT NULL,
   `surname` text NOT NULL,
-  `email` text NOT NULL,
+  `email` varchar(255) NOT NULL,
   `password` text NOT NULL,
   `birth_date` text NOT NULL,
   `address` text NOT NULL,
   `phone` text,
   `image` text NOT NULL,
   `subscription` text NOT NULL,
-  `end_subscription` date NOT NULL,
-  `token_firebase` text
+  `end_subscription` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dump dei dati per la tabella `user`
 --
 
-INSERT INTO `user` (`id_user`, `name`, `surname`, `email`, `password`, `birth_date`, `address`, `phone`, `image`, `subscription`, `end_subscription`, `token_firebase`) VALUES
-(1, 'Matteo', 'Novembre', 'matteo.novembre94@gmail.com', '$2y$10$w/VhH2Fbx7fN5LicLLDdDeZ1mK5T5g4xZC3RAlbE/s0oucw6XqPTe', '1994-08-06', 'Via Quarnaro I, n.41', '0', '', '6', '0000-00-00', NULL),
-(2, 'Irene', 'Raimondi', 'ireraim@gmail.com', '$2y$10$.ahTbMa.wqeVje48mgYK1uJzwapMBXCSUxcb4qPuGo9NvUYm1fSRa', '1991-07-14', 'Via Monte Grappa 61', '0', '', '2', '0000-00-00', NULL),
-(3, 'Sergio', 'Micalizzi', 'sergio.micalizzi@gmail.com', '$2y$10$CTDkeY8TYUwybx5qJqGr9uvEwclgIg6Qd13xRZbu8/gBskgnims5G', '1992-01-01', 'via prova', '0', '', '2', '0000-00-00', NULL);
+INSERT INTO `user` (`id_user`, `name`, `surname`, `email`, `password`, `birth_date`, `address`, `phone`, `image`, `subscription`, `end_subscription`) VALUES
+(1, 'Matteo', 'Novembre', 'matteo.novembre94@gmail.com', '$2y$10$w/VhH2Fbx7fN5LicLLDdDeZ1mK5T5g4xZC3RAlbE/s0oucw6XqPTe', '1994-08-06', 'Via Quarnaro I, n.41', '0', '', '6', '0000-00-00'),
+(2, 'Irene', 'Raimondi', 'ireraim@gmail.com', '$2y$10$.ahTbMa.wqeVje48mgYK1uJzwapMBXCSUxcb4qPuGo9NvUYm1fSRa', '1991-07-14', 'Via Monte Grappa 61', '0', '', '2', '0000-00-00'),
+(3, 'Sergio', 'Micalizzi', 'sergio.micalizzi@gmail.com', '$2y$10$CTDkeY8TYUwybx5qJqGr9uvEwclgIg6Qd13xRZbu8/gBskgnims5G', '1992-01-01', 'via prova', '0', '', 'giornaliero', '0000-00-00'),
+(4, 'Matteo ', 'Novembre', 'matteo.novembre944@gmail.com', '$2y$10$E1.8g0pCR5xxwy5ZTvf25e02HqVV6EbXYMBVRODP/HPiIOYAUePCK', '1994-08-06', 'Via Quarnaro I, n.41', '333333333333', '', 'vuh', '1994-08-06');
 
 --
 -- Indici per le tabelle scaricate
@@ -255,9 +254,9 @@ ALTER TABLE `exercise`
   ADD PRIMARY KEY (`id_exercise`);
 
 --
--- Indici per le tabelle `exercise_list`
+-- Indici per le tabelle `exercise_schedules`
 --
-ALTER TABLE `exercise_list`
+ALTER TABLE `exercise_schedules`
   ADD PRIMARY KEY (`id_list`);
 
 --
@@ -288,7 +287,8 @@ ALTER TABLE `subscription`
 -- Indici per le tabelle `user`
 --
 ALTER TABLE `user`
-  ADD PRIMARY KEY (`id_user`);
+  ADD PRIMARY KEY (`id_user`),
+  ADD UNIQUE KEY `email` (`email`);
 
 --
 -- AUTO_INCREMENT per le tabelle scaricate
@@ -307,10 +307,10 @@ ALTER TABLE `exercise`
   MODIFY `id_exercise` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
--- AUTO_INCREMENT per la tabella `exercise_list`
+-- AUTO_INCREMENT per la tabella `exercise_schedules`
 --
-ALTER TABLE `exercise_list`
-  MODIFY `id_list` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+ALTER TABLE `exercise_schedules`
+  MODIFY `id_list` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT per la tabella `messages`
@@ -340,7 +340,7 @@ ALTER TABLE `subscription`
 -- AUTO_INCREMENT per la tabella `user`
 --
 ALTER TABLE `user`
-  MODIFY `id_user` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_user` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

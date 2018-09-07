@@ -5,21 +5,10 @@
  * Date: 19/03/2018
  * Time: 11:45
  */
-/*
- define('DB_USERNAME','root');
- define('DB_PASSWORD','');
- define('DB_NAME','smartgym');
- define('DB_HOST','localhost');
- */
 
-#Credentials
-define('USERNAME','');
-define('PASSWORD','');
-define('IP_ADDRESS', '');
 
-/**
- *
- */
+#Credential
+define('IP_ADDRESS', 'http://127.0.0.1:9090');
 
 #URLs
 define('LOGIN',IP_ADDRESS.'/login_website/login');
@@ -64,4 +53,4 @@ define('PROFILE',IP_ADDRESS.'/account/profile');
 define('THINGSPEAK','http://api.thingspeak.com/channels/565919/feed.json');
 
 //defined a new constant for firebase api key
-define('FIREBASE_API_KEY', 'AAAA-nqedSg:APA91bGsIWfBM52TvOfXwsLsG_yvHz-l2x2-d76PeADV5Ci5mINkbsYEVhCkSTMeOW3bwEyQ1C12wY5ebwyUFmAdYtFgHfdfkJZhsqDoTXjwqi3psfIPexsEy4P1iMy-UNQ8b1VZ4xiU');
+define('FIREBASE_API_KEY', 'AAAA-GfsNEY:APA91bEoMzRpctgZ4Hu7iFI5Wic70Ufqb2GfDs0qwG3z8hTuBMaRKru2_BfvvNfR9yci-Rj24aAH2CMNfYVV7EkHL9jQUd50L79E_G3rSziGdLE2Z_mafgdhhe6gYAkTcWamFrIIqX4n');

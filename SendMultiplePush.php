@@ -11,57 +11,36 @@ class SendMultiplePush{
     public function sendNotification($title, $body, $destination, $argument){
 
         //importing required files
-        require_once 'send_messages/DbOperation.php';
         require_once 'Firebase.php';
-        require_once 'Push.php';
 
         $response = array();
-
-        $push = new Push(
-                $title,
-                $body
-        );
 
         if(!empty($title)){
 
             if($destination =='topic') {
-                //getting the push from push object
-                $mPushNotification = $push->getPush();
 
                 //creating firebase class object
                 $firebase = new Firebase();
 
                 //sending push notification and displaying result
-                echo $firebase->send_topic($argument, $mPushNotification);
+                $firebase->send_topic($argument, $title, $body);
             }
             elseif($destination =='all') {
-                //getting the push from push object
-                $mPushNotification = $push->getPush();
 
                 //creating firebase class object
                 $firebase = new Firebase();
-                $conn = new DbOperation();
-
-                $tokens_firebase = array();
-                $mess = $conn->getAllTokens();
-                $array = json_decode($mess, True);
-
-                foreach ($array as $arr){
-                    array_push($tokens_firebase,$arr['tokens']);
-                }
 
                 //sending push notification and displaying result
-                echo $firebase->send($tokens_firebase, $mPushNotification);
+                $firebase->send_all($title, $body);
             }
             else{
                 $response['error']=true;
                 $response['message']='Parameters missing or invalid request!';
-                return json_encode($response);
             }
         }else{
             $response['error']=true;
             $response['message']='Title missing!';
-            return json_encode($response);
         }
+        return json_encode($response);
     }
 }

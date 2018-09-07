@@ -9,19 +9,35 @@
 
 class Firebase {
 
-    public function send($registration_ids, $message) {
+    public function send_all($title, $body) {
         $fields = array(
-            'to' => $registration_ids,
-            'data' => $message,
+            "data" => array(
+                "title"=> $title,
+                "body"=> $body
+            ),
+            "notification" => array(
+                "title"=> $title,
+                "body"=> $body
+            ),
+            'to' => '/topics/all'
         );
+
         return $this->sendPushNotification($fields);
     }
 
-    public function send_topic($topic, $message) {
+    public function send_topic($argument, $title, $body) {
         $fields = array(
-            'to' => '/topics/'.$topic,
-            'data' => $message,
+            "data" => array(
+                "title"=> $title,
+                "body"=> $body
+            ),
+            "notification" => array(
+                "title"=> $title,
+                "body"=> $body
+            ),
+            'to' => '/topics/'.$argument
         );
+
         return $this->sendPushNotification($fields);
     }
 
