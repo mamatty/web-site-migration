@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Creato il: Set 07, 2018 alle 15:31
+-- Creato il: Set 09, 2018 alle 23:26
 -- Versione del server: 10.1.34-MariaDB
 -- Versione PHP: 7.0.31
 
@@ -47,7 +47,9 @@ INSERT INTO `account` (`id`, `first_name`, `last_name`, `email`, `password`, `ha
 (17, 'sergio', 'micalizzi', 'sergio.micalizzi@gmail.com', '$2y$10$eroxuw2oHCffRa8l73grhuyl/HNMIlktzZIH/tz/OhVPUFOoPGJ/a', '46922a0880a8f11f8f69cbb52b1396be'),
 (18, 'Francesco', 'Ziparo', 'zipareddu@gmail.com', '$2y$10$A8esQpH/rRPfnNOpN3CMpO10Ozgu1DtReNgFfO2sawwtBM07bc8kq', 'b137fdd1f79d56c7edf3365fea7520f2'),
 (19, 'Matteo', 'ciao', 'ciao@gmail.com', '$2y$10$r3xC/37J8E.GkNm1rXG/6ewMSk7Oe9h00JwNCS7tfKxjpkbbEqgg2', '8cb22bdd0b7ba1ab13d742e22eed8da2'),
-(20, 'alessandro', 'prova', 'prova@prova.it', '$2y$10$q30l2I26RRhToZNXBK4Bte6fhbEu5ECoBm1m9f85PhdCRgRTYtBde', '0c74b7f78409a4022a2c4c5a5ca3ee19');
+(25, 'Francesco', 'Petrolino', 'francesco.petro@gmail.com', '1234', ''),
+(28, 'Francesco', 'Petrolino', 'francesco@gmail.com', '1234', ''),
+(32, 'Francesco', 'Petrolino', 'francesco.petrolino@gmail.com', '1234', '');
 
 -- --------------------------------------------------------
 
@@ -70,7 +72,7 @@ CREATE TABLE `exercise` (
 INSERT INTO `exercise` (`id_exercise`, `name`, `description`, `muscular_zone`, `url`) VALUES
 (1, 'distensioni con bilancere su panca', 'qualcosa', 'petto', 'prova'),
 (2, 'distensioni con manubri su panca inclinata', 'qualcosa1', 'petto', ''),
-(3, 'butterfly', 'qualcosa2', 'petto', 'prova'),
+(3, 'butterfly', 'prova-get', 'prova-get', 'www.prova-get.it'),
 (4, 'french press', 'qualcosa3', 'petto', ''),
 (5, 'tricipes machine', 'qualcosa4', 'tricipiti', ''),
 (6, 'lat machine', 'qualcosa5', 'schiena', ''),
@@ -91,7 +93,7 @@ CREATE TABLE `exercise_schedules` (
   `id_exercise` int(11) NOT NULL,
   `day` int(11) NOT NULL DEFAULT '1',
   `repetitions` int(11) NOT NULL,
-  `weight` float NOT NULL,
+  `weight` int(11) NOT NULL,
   `details` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -100,14 +102,11 @@ CREATE TABLE `exercise_schedules` (
 --
 
 INSERT INTO `exercise_schedules` (`id_list`, `id_schedule`, `id_exercise`, `day`, `repetitions`, `weight`, `details`) VALUES
-(2, 2, 1, 3, 2, 15, 'qualcosa'),
-(3, 6, 1, 1, 5, 18, 'frf'),
-(4, 6, 2, 1, 11, 14, 'ffff'),
-(5, 5, 5, 3, 11, 18, 'ddd'),
+(2, 2, 3, 3, 2, 15, 'prova-get'),
 (8, 7, 10, 2, 2, 20, 'frf'),
 (10, 7, 1, 2, 5, 14, 'frf'),
 (11, 7, 1, 1, 11, 18, 'ddd'),
-(12, 7, 4, 2, 5, 18, 'ge');
+(13, 7, 3, 1, 4, 15, 'prova-post');
 
 -- --------------------------------------------------------
 
@@ -145,7 +144,8 @@ INSERT INTO `messages` (`id_message`, `title`, `body`, `send_date`, `destination
 (15, 'lknj', 'jn', '2018-08-28', 'Array'),
 (16, 'aiuto', 'ewfw', '2018-08-28', 'topic'),
 (17, 'gg', 'ggg', '2018-08-28', 'all'),
-(18, 'vv', 'ff', '2018-08-28', 'topic');
+(18, 'vv', 'ff', '2018-08-28', 'topic'),
+(19, 'prova-post', 'prova-post', '2018-09-09', 'prova-post');
 
 -- --------------------------------------------------------
 
@@ -180,8 +180,6 @@ CREATE TABLE `schedules` (
 --
 
 INSERT INTO `schedules` (`id_schedule`, `id_user`, `name`, `details`, `start_date`, `end_date`, `num_days`, `objective`) VALUES
-(5, 1, 'vdf', 'efv', '2018-05-05', '2018-05-05', 5, 'efv'),
-(6, 5, 'prova', 'ddd', '2020-02-10', '2021-02-10', 3, 'qualcosa'),
 (7, 2, 'prova', 'ge', '2020-02-10', '2020-03-10', 3, 'qualcosa');
 
 -- --------------------------------------------------------
@@ -219,10 +217,9 @@ CREATE TABLE `user` (
   `surname` text NOT NULL,
   `email` varchar(255) NOT NULL,
   `password` text NOT NULL,
-  `birth_date` text NOT NULL,
+  `birth_date` date NOT NULL,
   `address` text NOT NULL,
   `phone` text,
-  `image` text NOT NULL,
   `subscription` text NOT NULL,
   `end_subscription` date NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -231,11 +228,13 @@ CREATE TABLE `user` (
 -- Dump dei dati per la tabella `user`
 --
 
-INSERT INTO `user` (`id_user`, `name`, `surname`, `email`, `password`, `birth_date`, `address`, `phone`, `image`, `subscription`, `end_subscription`) VALUES
-(1, 'Matteo', 'Novembre', 'matteo.novembre94@gmail.com', '$2y$10$w/VhH2Fbx7fN5LicLLDdDeZ1mK5T5g4xZC3RAlbE/s0oucw6XqPTe', '1994-08-06', 'Via Quarnaro I, n.41', '0', '', '6', '0000-00-00'),
-(2, 'Irene', 'Raimondi', 'ireraim@gmail.com', '$2y$10$.ahTbMa.wqeVje48mgYK1uJzwapMBXCSUxcb4qPuGo9NvUYm1fSRa', '1991-07-14', 'Via Monte Grappa 61', '0', '', '2', '0000-00-00'),
-(3, 'Sergio', 'Micalizzi', 'sergio.micalizzi@gmail.com', '$2y$10$CTDkeY8TYUwybx5qJqGr9uvEwclgIg6Qd13xRZbu8/gBskgnims5G', '1992-01-01', 'via prova', '0', '', 'giornaliero', '0000-00-00'),
-(4, 'Matteo ', 'Novembre', 'matteo.novembre944@gmail.com', '$2y$10$E1.8g0pCR5xxwy5ZTvf25e02HqVV6EbXYMBVRODP/HPiIOYAUePCK', '1994-08-06', 'Via Quarnaro I, n.41', '333333333333', '', 'vuh', '1994-08-06');
+INSERT INTO `user` (`id_user`, `name`, `surname`, `email`, `password`, `birth_date`, `address`, `phone`, `subscription`, `end_subscription`) VALUES
+(1, 'Matteo', 'Novembre', 'matteo.novembre94@gmail.com', '$2y$10$w/VhH2Fbx7fN5LicLLDdDeZ1mK5T5g4xZC3RAlbE/s0oucw6XqPTe', '1994-08-06', 'Via Quarnaro I, n.41', '0', '6', '0000-00-00'),
+(2, 'Irene', 'Raimondi', 'ireraim@gmail.com', '$2y$10$.ahTbMa.wqeVje48mgYK1uJzwapMBXCSUxcb4qPuGo9NvUYm1fSRa', '1991-07-14', 'Via Monte Grappa 61', '0', '2', '0000-00-00'),
+(3, 'Sergio', 'Micalizzi', 'sergio.micalizzi@gmail.com', '$2y$10$CTDkeY8TYUwybx5qJqGr9uvEwclgIg6Qd13xRZbu8/gBskgnims5G', '1992-01-01', 'via prova', '0', 'giornaliero', '0000-00-00'),
+(4, 'Matteo ', 'Novembre', 'matteo.novembre944@gmail.com', '$2y$10$E1.8g0pCR5xxwy5ZTvf25e02HqVV6EbXYMBVRODP/HPiIOYAUePCK', '1994-08-06', 'Via Quarnaro I, n.41', '333333333333', 'vuh', '1994-08-06'),
+(5, 'prova-post', 'prova-post', 'prova-post@it.it', '1234', '1994-06-06', 'prova-post', '123456789', 'prova-post', '1994-06-06'),
+(8, 'prova-post1', 'prova-post1', 'prova1@it.it', '1234', '1994-06-06', 'prova-post1', '123456789', 'prova-post1', '1994-06-06');
 
 --
 -- Indici per le tabelle scaricate
@@ -245,7 +244,8 @@ INSERT INTO `user` (`id_user`, `name`, `surname`, `email`, `password`, `birth_da
 -- Indici per le tabelle `account`
 --
 ALTER TABLE `account`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `email` (`email`);
 
 --
 -- Indici per le tabelle `exercise`
@@ -298,25 +298,25 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT per la tabella `account`
 --
 ALTER TABLE `account`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=33;
 
 --
 -- AUTO_INCREMENT per la tabella `exercise`
 --
 ALTER TABLE `exercise`
-  MODIFY `id_exercise` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id_exercise` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT per la tabella `exercise_schedules`
 --
 ALTER TABLE `exercise_schedules`
-  MODIFY `id_list` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id_list` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT per la tabella `messages`
 --
 ALTER TABLE `messages`
-  MODIFY `id_message` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id_message` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT per la tabella `room`
@@ -328,7 +328,7 @@ ALTER TABLE `room`
 -- AUTO_INCREMENT per la tabella `schedules`
 --
 ALTER TABLE `schedules`
-  MODIFY `id_schedule` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id_schedule` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT per la tabella `subscription`
@@ -340,7 +340,7 @@ ALTER TABLE `subscription`
 -- AUTO_INCREMENT per la tabella `user`
 --
 ALTER TABLE `user`
-  MODIFY `id_user` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_user` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
