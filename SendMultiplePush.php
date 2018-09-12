@@ -11,7 +11,7 @@ class SendMultiplePush{
     public function sendNotification($title, $body, $destination, $argument){
 
         //importing required files
-        require_once 'Firebase.php';
+        require_once 'DbOperations/Firebase.php';
 
         $response = array();
 
