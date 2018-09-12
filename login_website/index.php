@@ -2,6 +2,10 @@
 /* Main page with two forms: sign up and log in */
 
 session_start();
+require_once "../DbOperations/DbOperationLogin.php";
+$conn = new DbOperation();
+$app_id = $conn->generateToken();
+setcookie("app-id", "debug",time()+60*60*24*30,'/','',False, True);
 ?>
 <!DOCTYPE html>
 <html>
