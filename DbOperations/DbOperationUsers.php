@@ -30,7 +30,17 @@ class DbOperationUsers{
         );
 
         $context  = stream_context_create($options);
-        $result = file_get_contents(AUTOCOMPLETE_USER.'?'.$data, false, $context);
+        @$result = file_get_contents(AUTOCOMPLETE_USER.'?'.$data, false, $context);
+        
+        if(!$result) {
+            if (isset($http_response_header) && strpos($http_response_header[0], "401")) {
+                $error = $http_response_header[0];
+            }
+            else {
+                $error = "Error 500: Impossible to enstablish a connection with the server! Please, Try in another moment.";
+            }
+            header( "location: ../Errors/error.php?error=".$error );
+        }
 
         return $result;
     }
@@ -61,7 +71,17 @@ class DbOperationUsers{
         );
 
         $context  = stream_context_create($options);
-        $result = file_get_contents(CREATE_USER, false, $context);
+        @$result = file_get_contents(CREATE_USER, false, $context);
+        
+        if(!$result) {
+            if (isset($http_response_header) && strpos($http_response_header[0], "401")) {
+                $error = $http_response_header[0];
+            }
+            else {
+                $error = "Error 500: Impossible to enstablish a connection with the server! Please, Try in another moment.";
+            }
+            header( "location: ../Errors/error.php?error=".$error );
+        }
 
         return $result;
     }
@@ -84,7 +104,17 @@ class DbOperationUsers{
         );
 
         $context  = stream_context_create($options);
-        $result = file_get_contents(DELETE_USER, false, $context);
+        @$result = file_get_contents(DELETE_USER, false, $context);
+        
+        if(!$result) {
+            if (isset($http_response_header) && strpos($http_response_header[0], "401")) {
+                $error = $http_response_header[0];
+            }
+            else {
+                $error = "Error 500: Impossible to enstablish a connection with the server! Please, Try in another moment.";
+            }
+            header( "location: ../Errors/error.php?error=".$error );
+        }
 
         return $result;
     }
