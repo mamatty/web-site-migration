@@ -69,12 +69,11 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
             auto_complete = self.db_perform_query(query, (query_param,))
 
             # final result
-            res = "no result" if auto_complete is None else auto_complete
+            res = kSTATUS_ERR if auto_complete is None else auto_complete
             return json.dumps({dict_key: res})
 
         def autocomplete_user(p):
-            print(p)
-            query = "SELECT surname FROM user WHERE surname LIKE ? LIMIT 5"
+            query = "SELECT DISTINCT surname FROM user WHERE surname LIKE ? LIMIT 5"
             return autocomplete(p, query, "surname")
 
         def autocomplete_exercise(p):
@@ -82,7 +81,7 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
             return autocomplete(p, query, "exercise")
 
         def autocomplete_message(p):
-            query = f"SELECT title FROM messages WHERE title LIKE ? LIMIT 5"
+            query = f"SELECT DISTINCT title FROM messages WHERE title LIKE ? LIMIT 5"
             return autocomplete(p, query, "message")
 
         # === manage_schedules/manage_exercises.php ===
@@ -102,17 +101,17 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
                     "FROM exercise_schedules " \
                     "WHERE id_schedule = ? ORDER BY day DESC LIMIT ?,?"
             response = self.db_perform_query(query, (int(id_schedule),  int(from_record_num), int(records_per_page)))
-            print(response)
 
             # check the schedule has some exercises
-            if not response:
+            if response is None:
                 return json.dumps({"status": kSTATUS_ERR})
             else:
                 # evaluate the number of exercises found
-                total_record = len(response)
+                query = "SELECT COUNT(*) FROM exercise_schedules WHERE id_schedule = ?"
+                total_record =  self.db_perform_query(query, (int(id_schedule),),  single_res=True)
                 exercises = []
                 # represent exercises as array of dictionaries
-                for i in range(total_record):
+                for i in range(len(response)):
                     ex = {
                             "id_list": response[i][0],
                             "id_exercise": response[i][1],
@@ -129,16 +128,16 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
                     response_name = self.db_perform_query(query_name, (exercises[i]["id_exercise"],), single_res=True)
                     # check the exercise exist in the exercise table
                     if not response_name:
-                        return json.dumps({"status": kSTATUS_ERR})
+                        return json.dumps({"status": 'exercise-'+kSTATUS_ERR})
                     else:
-                        # save the name
+                    # save the name
                         exercises[i]["name"] = response_name[0]
 
                 # final result
                 res = {
                     "status": kSTATUS_OK,
                     "exercises": exercises,
-                    "total_rows": total_record
+                    "total_rows": total_record[0]
                 }
                 return self.to_json(res)
 
@@ -158,17 +157,17 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
                     "FROM schedules " \
                     "WHERE id_user = ? ORDER BY end_date DESC LIMIT ?,?"
             response = self.db_perform_query(query, (int(id_user), int(from_record_num), int(records_per_page)))
-            print(response)
 
             # check there are schedules for the user
             if response is None:
                 return json.dumps({"status": kSTATUS_ERR})
             else:
                 # evaluate the number of schedules found
-                total_record = len(response)
+                query = "SELECT COUNT(*) FROM schedules WHERE id_user = ?"
+                total_record = self.db_perform_query(query, (int(id_user),), single_res=True)
                 exercises = []
                 # represent exercises as array of dictionaries
-                for i in range(total_record):
+                for i in range(len(response)):
                     start_date = "{}-{}-{}".format(response[i][3].year, response[i][3].month, response[i][3].day)
                     end_date = "{}-{}-{}".format(response[i][4].year, response[i][4].month, response[i][4].day)
                     ex = {
@@ -186,7 +185,7 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
                 res = {
                     "status": kSTATUS_OK,
                     "schedules": exercises,
-                    "total_rows": total_record
+                    "total_rows": total_record[0]
                 }
                 return self.to_json(res)
 
@@ -210,10 +209,11 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
                 return json.dumps({"status": kSTATUS_ERR})
             else:
                 # evaluate the number of users found
-                total_record = len(response)
+                query = "SELECT COUNT(*) FROM user"
+                total_record = self.db_perform_query(query, single_res=True)
                 users = []
                 # represent exercises as array of dictionaries
-                for i in range(total_record):
+                for i in range(len(response)):
                     us = {
                         "id_user": response[i][0],
                         "name": response[i][1],
@@ -226,7 +226,7 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
                 res = {
                     "status": kSTATUS_OK,
                     "users": users,
-                    "total_rows": total_record
+                    "total_rows": total_record[0]
                 }
                 return self.to_json(res)
 
@@ -235,13 +235,14 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
             self._auth()
 
             # retrieve parameters
-            user_id = self.logged_users[self.get_token_cookie()]
+            id = p.get("id", None)
+            check_mandatory_parameters([id], ["id"])
 
             # perform the query
             query = "SELECT name, surname " \
                     "FROM user " \
                     "WHERE id_user = ?"
-            profile = self.db_perform_query(query, (user_id,), single_res=True)
+            profile = self.db_perform_query(query, (id,), single_res=True)
 
             # check the user exists
             if profile is None:
@@ -272,11 +273,12 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
             if not response:
                 return json.dumps({"status": kSTATUS_ERR})
             else:
+                query = "SELECT COUNT(*) FROM exercise "
+                total_record = self.db_perform_query(query)
                 # number of exercises found
-                total_record = len(response)
                 exercises = []
                 # represent exercises as array of dictionaries
-                for i in range(total_record):
+                for i in range(len(response)):
                     ex = {
                         "id_exercise": response[i][0],
                         "name": response[i][1],
@@ -289,7 +291,7 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
                 res = {
                     "status": kSTATUS_OK,
                     "exercises": exercises,
-                    "total_rows": total_record
+                    "total_rows": total_record[0]
                 }
                 return self.to_json(res)
 
@@ -302,12 +304,9 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
 
             check_mandatory_parameters([name], ["search"])
 
-            # perform the query (list of exercises having a same name?)
-            # TODO: why? we are looking for exercises with the same name. Review database structure
-            # @Giorgio: Here we perform a search about an exercise that is present inside the database.
             query = "SELECT id_exercise, name, description, muscular_zone " \
                     "FROM exercise " \
-                    "WHERE name = ? "
+                    "WHERE name = ? LIMIT 0,1"
             response = self.db_perform_query(query, (name,), single_res=True)
 
             # check something have been found
@@ -354,10 +353,11 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
                 return json.dumps({"status": kSTATUS_ERR})
             else:
                 # retrieve the number of users found
-                total_record = len(response)
+                query = "SELECT COUNT(*) FROM user WHERE surname = ?"
+                total_record = self.db_perform_query(query, (surname,), single_res=True)
                 users = []
                 # represent exercises as array of dictionaries
-                for i in range(total_record):
+                for i in range(len(response)):
                     us = {
                         "id_user": response[i][0],
                         "name": response[i][1],
@@ -370,57 +370,42 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
                 user_json = {
                     "status": kSTATUS_OK,
                     "users": users,
-                    "total_rows": total_record
+                    "total_rows": total_record[0]
                 }
                 return self.to_json(user_json)
 
-        def update_exercise(p):
-            # check if the user and the application are allowed to access the service
+        def look_updated_user(p):
+
             self._auth()
 
-            # retrieve parameters
-            id_list = p.get("id", None)
-            name = p.get("name", None)
-            day = p.get("day", None)
-            repetitions = p.get("repetitions", None)
-            weight = p.get("weight", None)
-            details = p.get("details", None)
-            check_mandatory_parameters([id_list, name, day, repetitions, weight, details],
-                                       ["id", "name", "day", "repetitions", "weight", "details"])
+            id_user = p.get("id_user", None)
+            check_mandatory_parameters([id_user], ["id_user"])
 
-            # perform the query
-            # TODO: would be useful to have DB transactions for these two consecutive updates, in order to have a rollback in case of errors
-            # TODO: or better... Why should I want to change the exercise name together with schedule information? Remove the "name" parameter
-            # @Giorgio: About the transaction, I agree with you. I need to understand the right sintax in order to call it.
-            # About the possibility to change the exercise name, is due to the fact that sometimes is enough to change an exercise with another one
-            # maybe because that exercise is too tough for you o maybe because is dangerous for your health in some way. Deleting this step
-            # what the operator has to do is to delete the current exercise and create a new one. With this implementation, this step is overcomed.
-            # We talked about it last time via email.
-            # @Matteo: I think I am missing something, about what the "name" actually is. For the transactions, I can help
+            # retrieve user fresh information
+            query = "SELECT id_user, name, surname, email, birth_date, address, subscription, end_subscription " \
+                    "FROM user " \
+                    "WHERE id_user = ? LIMIT 0,1"
+            response = self.db_perform_query(query, (int(id_user),), single_res=True)
 
-            # 1. Check if the the exercise name is present inside the DB
-            query = "SELECT id_exercise " \
-                    "FROM exercise " \
-                    "WHERE name = ?"
-            query_params = (name,)
-            id_exercise = self.db_perform_query(query, query_params, single_res=True)
-            print(id_exercise)
-            # check the exercise has been updated
-            if id_exercise is None:
-                return json.dumps({"status": kSTATUS_ERR})
-
-            # 2. Update general info inside exercise_schedules table
-            query = "UPDATE exercise_schedules " \
-                    "SET id_exercise= ?, day=?, repetitions=?, weight=?, details=? " \
-                    "WHERE id_list = ?"
-            query_params = (int(id_exercise[0]), int(day), int(repetitions), int(weight), details, int(id_list))
-            self.db_perform_query(query, query_params)
-
-            # check the exercise has been updated
-            if self.db_manager.row_count == 0:
+            # check the user exists
+            if response is None:
                 return json.dumps({"status": kSTATUS_ERR})
             else:
-                return json.dumps({"status": kSTATUS_OK})
+                birth_date = "{}-{}-{}".format(response[4].year, response[4].month, response[4].day)
+                end_subscription = "{}-{}-{}".format(response[7].year, response[7].month, response[7].day)
+                user_json = {
+                    "status": kSTATUS_OK,
+                    "id_user": response[0],
+                    "name": response[1],
+                    "surname": response[2],
+                    "email": response[3],
+                    "birth_date": birth_date,
+                    "address": response[5],
+                    "subscription": response[6],
+                    "end_subscription":end_subscription
+
+                }
+                return self.to_json(user_json)
 
         def look_updated_exercise(p):
             # retrieve exercise schedule info
@@ -435,7 +420,7 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
                     "FROM exercise_schedules " \
                     "WHERE id_list = ?"
             response = self.db_perform_query(query, (int(id_list),), single_res=True)
-            print(response)
+
             # check it has been found
             if response is None:
                 return json.dumps({"status": kSTATUS_ERR})
@@ -444,7 +429,7 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
                 query_name = "SELECT name FROM exercise " \
                              "WHERE id_exercise = ?"
                 response_name = self.db_perform_query(query_name, (int(response[0]),), single_res=True)
-                print(response_name)
+
                 if response_name is None:
                     return json.dumps({"status": "exercise_name-not-found"})
                 else:
@@ -458,33 +443,8 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
                         "repetitions": response[4],
                         "name": response_name[0]
                     }
-                    print(exercise_json)
+
                     return self.to_json(exercise_json)
-
-        def update_exercise_list(p):
-            # check if the user and the application are allowed to access the service
-            self._auth()
-
-            # retrieve parameters
-            id_exercise = p.get("id", None)
-            name = p.get("name", None)
-            description = p.get("description", None)
-            muscular_zone = p.get("muscular_zone", None)
-            url = p.get("url", None)
-            check_mandatory_parameters([id_exercise, name, description, muscular_zone, url],
-                                       ["id", "name", "description", "muscular_zone", "url"])
-
-            # perform the query
-            query = "UPDATE exercise " \
-                    "SET name=?, description=?, muscular_zone=?, url=? " \
-                    "WHERE id_exercise = ?"
-            params = (name, description, muscular_zone, url, int(id_exercise))
-            self.db_perform_query(query, params)
-
-            if self.db_manager.row_count() == 0:
-                return json.dumps({"status": kSTATUS_ERR})
-            else:
-                return json.dumps({"status": kSTATUS_OK})
 
         def look_updated_exercise_list(p):
             # retrieve exercise info
@@ -564,10 +524,11 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
                 return json.dumps({"status": kSTATUS_ERR})
             else:
                 # evaluate the number of messages found
-                total_record = len(response)
+                query = "SELECT COUNT(*) FROM messages"
+                total_record = self.db_perform_query(query, single_res=True)
                 messages = []
                 # represent exercises as array of dictionaries
-                for i in range(total_record):
+                for i in range(len(response)):
                     send_date = "{}-{}-{}".format(response[i][2].year, response[i][2].month, response[i][2].day)
                     mes = {
                         "id_message": response[i][0],
@@ -581,7 +542,7 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
                 res = {
                     "status": kSTATUS_OK,
                     "messages": messages,
-                    "total_rows": total_record
+                    "total_rows": total_record[0]
                 }
                 return self.to_json(res)
 
@@ -601,17 +562,18 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
                     "FROM messages " \
                     "WHERE title = ? " \
                     "ORDER BY send_date DESC LIMIT ?,?"
-            response = self.db_perform_query(query, (title, int(from_record_num), int(records_per_page)))
+            response = self.db_perform_query(query, (title, int(from_record_num), int(records_per_page),))
 
             # check if some messages have been retrieved
-            if not response:
+            if response is None:
                 return json.dumps({"status": kSTATUS_ERR})
             else:
                 # evaluate the number of messages found
-                total_record = len(response)
+                query = "SELECT COUNT(*) FROM messages WHERE title = ?"
+                total_record = self.db_perform_query(query, (title,), single_res=True)
                 messages = []
                 # represent exercises as array of dictionaries
-                for i in range(total_record):
+                for i in range(len(response)):
                     send_date = "{}-{}-{}".format(response[i][3].year, response[i][3].month, response[i][3].day)
                     mes = {
                         "id_message": response[i][0],
@@ -626,7 +588,7 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
                 res = {
                     "status": kSTATUS_OK,
                     "messages": messages,
-                    "total_rows": total_record
+                    "total_rows": total_record[0]
                 }
                 return self.to_json(res)
 
@@ -650,6 +612,7 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
             else:
                 send_date = "{}-{}-{}".format(response[3].year, response[3].month, response[3].day)
                 res = {
+                    "status":kSTATUS_OK,
                     "id_message": response[0],
                     "title": response[1],
                     "body": response[2],
@@ -680,11 +643,10 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
             "manage_schedules/read_exercises": read_exercises,
             "manage_schedules/search_user": search_users_by_surname,
             "manage_schedules/search_exercise_list": search_exercise_list,
-            "manage_schedules/update_exercise": update_exercise,
             "manage_schedules/look_updated_exercise": look_updated_exercise,
-            "manage_schedules/update_exercise_list": update_exercise_list,
             "manage_schedules/look_updated_exercise_list": look_updated_exercise_list,
             "manage_user/autocomplete": autocomplete_user,
+            "manage_user/look_updated_user": look_updated_user,
             "manage_user/read_one_user": read_one_user,
             "send_messages/autocomplete": autocomplete_message,
             "send_messages/read_messages": read_messages,
@@ -704,12 +666,12 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
 
             # retrieve parameters
             email = p.get("email", None)
-            password = p.get("password", None)
-            check_mandatory_parameters([email, password], ["email", "password"])
+
+            check_mandatory_parameters([email], ["email"])
 
             # perform the query
-            query = "SELECT id, first_name, last_name FROM account WHERE email = ? and password = ?"
-            response = self.db_perform_query(query, (email, password), single_res=True)
+            query = "SELECT id, first_name, last_name, password FROM account WHERE email = ?"
+            response = self.db_perform_query(query, (email,), single_res=True)
 
             if response is None:
                 return json.dumps({"status": kSTATUS_ERR})
@@ -718,6 +680,7 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
                 user_json = {
                     "first_name": response[1],
                     "last_name": response[2],
+                    "password": response[3],
                     "status": "successful"
                 }
                 # TODO: insert a cookie in the response
@@ -737,8 +700,8 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
 
             # try to register the user
             query = "INSERT INTO account (first_name, last_name, email, password) VALUES (?,?,?,?)"
-            params = ( first_name, last_name, email, password)
-            print(params)
+            params = (first_name, last_name, email, password)
+
             self.db_perform_query(query, params)
             if self.db_manager.row_count == 0:
                 # maybe the user was already registered
@@ -802,6 +765,7 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
             # create the exercise
             query = "INSERT INTO exercise (name, description, muscular_zone, url) VALUES (?,?,?,?)"
             query_params = (name, description, muscular_zone, url)
+
             self.db_perform_query(query, query_params)
 
             # final result
@@ -844,7 +808,7 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
             query = "SELECT id_schedule FROM schedules WHERE id_user = ?"
             response = self.db_perform_query(query, (int(id_user),))
 
-            if self.db_manager.row_count != 0:
+            if response is not None:
                 # for each schedule, delete all the references in tables 'schedules' and 'exercise_schedule'
                 for i in range(len(response)):
 
@@ -854,13 +818,9 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
                     if delete_sc is None:
                         return json.dumps({"status": "not-deleted"})
 
-                    # 3. Delete its exercises
-                    query_ex = "DELETE FROM exercise_schedules WHERE id_schedule = ?"
-                    delete_ex = self.db_perform_query(query_ex, (int(response[i][0]),))
-                    if delete_ex is None:
-                        return json.dumps({"status": "not-deleted"})
-
                 return json.dumps({"status": "successful"})
+            else:
+                return json.dumps({"status": "not-deleted"})
 
         def delete_single_exercise(p):
             # check if the user and the application are allowed to access the service
@@ -901,35 +861,10 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
             check_mandatory_parameters([id_schedule], ["id"])
 
             # perform the queries
-            # TODO: would be useful to have DB transactions here, in order to rollback in case of errors
-            # TODO: or, better... Define FOREIGN KEY with UPDATE = CASCADE, in order to propagate the deletion
-            # @Giorgio: ok, now i try to understand how to do.
-            # @Matteo: l'idea è questa... definire la FOREIGN KEY (chiave esterna) è senz'altro qualcosa che già sai fare.
-            # In poche parole, si tratta di introdurre un vincolo di integrità sui dati. Immagina di avere due tabelle, utenti e prodotti, a cui
-            # affianchi acquisti. In quest'ultima tieni traccia, per ogni utente, del prodotto acquistato (più la data e altre informazioni)
-            # Ok: come tieni traccia di utenti e prodotti? Inserisci l'id (campo INT ecc.): ma come fai ad avere la garanzia che
-            # sia l'utente e il prodotto, dei quali specifichi l'id in acquisti, esistano davvero?
-            # L'unico modo cha hai a disposizione è quello di creare una chiave esterna (id_user nella tabella acquisti è chiave esterna
-            # del campo id nella tabella utenti). Così facendo, forzi il database a controllare (automaticamente!) che durante un INSERT
-            # di record nella tabella acquisti l'utente ed il prodotto specificati compaiano (quindi esistano) nelle altre due tabelle.
-            # ORA: quando crei una FOREIGN KEY, specifichi una "politica" di utilizzo. In altre parole: tornando all'esempio,
-            # puoi decidere cosa fare quando (per esempio) un utente viene eliminato dalla tabella utenti.
-            # Perché, infatti, ti ritroveresti ad avere degli acquisti registrati per un utente (o un prodotto, stessa storia)
-            # che non esiste più.
-            # Guarda su internet per i dettagli tecnici della sintassi SQL, ma io penso cha a te serva ON DELETE CASCADE: ovvero, nell'esempio
-            # proposto, se elimino un utente ALLORA voglio eliminare anche tutta la sua cronologia acquisti.
-            # Io ho trovato questo per aiutarti:
-            # https://www.w3schools.com/sql/sql_foreignkey.asp
-            # https://www.techonthenet.com/sql_server/foreign_keys/foreign_delete.php
 
             # 1. Delete the schedule
             query_sc = "DELETE FROM schedules WHERE id_schedule = ?"
             self.db_perform_query(query_sc, (int(id_schedule),))
-            if self.db_manager.row_count == 0:
-                return json.dumps({"status": "not-deleted"})
-            # 2. Delete its exercises
-            query_ex = "DELETE FROM exercise_schedules WHERE id_schedule = ?"
-            self.db_perform_query(query_ex, (int(id_schedule),))
             if self.db_manager.row_count == 0:
                 return json.dumps({"status": "not-deleted"})
 
@@ -1004,38 +939,56 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
             else:
                 return json.dumps({"status": 'user_updated'})
 
-        def look_updated_user(p):
-
+        def update_exercise(p):
+            # check if the user and the application are allowed to access the service
             self._auth()
 
-            id_user = p.get("id_user", None)
-            check_mandatory_parameters([id_user], ["id_user"])
+            # retrieve parameters
+            id_list = p.get("id", None)
+            day = p.get("day", None)
+            repetitions = p.get("repetitions", None)
+            weight = p.get("weight", None)
+            details = p.get("details", None)
+            check_mandatory_parameters([id_list, day, repetitions, weight, details],
+                                       ["id", "day", "repetitions", "weight", "details"])
 
-            # retrieve user fresh information
-            query = "SELECT id_user, name, surname, email, birth_date, address, subscription, end_subscription " \
-                    "FROM user " \
-                    "WHERE id_user = ? LIMIT 0,1"
-            response = self.db_perform_query(query, (int(id_user),), single_res=True)
+            # Update general info inside exercise_schedules table
+            query = "UPDATE exercise_schedules " \
+                    "SET day=?, repetitions=?, weight=?, details=? " \
+                    "WHERE id_list = ?"
+            query_params = (int(day), int(repetitions), int(weight), details, int(id_list))
+            self.db_perform_query(query, query_params)
 
-            # check the user exists
-            if response is None:
+            # check the exercise has been updated
+            if self.db_manager.row_count == 0:
                 return json.dumps({"status": kSTATUS_ERR})
             else:
-                birth_date = "{}-{}-{}".format(response[4].year, response[4].month, response[4].day)
-                end_subscription = "{}-{}-{}".format(response[7].year, response[7].month, response[7].day)
-                user_json = {
-                    "status": kSTATUS_OK,
-                    "id_user": response[0],
-                    "name": response[1],
-                    "surname": response[2],
-                    "email": response[3],
-                    "birth_date": birth_date,
-                    "address": response[5],
-                    "id_subscription": response[6],
-                    "end_subscription":end_subscription
+                return json.dumps({"status": kSTATUS_OK})
 
-                }
-                return self.to_json(user_json)
+        def update_exercise_list(p):
+            # check if the user and the application are allowed to access the service
+            self._auth()
+
+            # retrieve parameters
+            id_exercise = p.get("id", None)
+            name = p.get("name", None)
+            description = p.get("description", None)
+            muscular_zone = p.get("muscular_zone", None)
+            url = p.get("url", None)
+            check_mandatory_parameters([id_exercise, name, description, muscular_zone, url],
+                                       ["id", "name", "description", "muscular_zone", "url"])
+
+            # perform the query
+            query = "UPDATE exercise " \
+                    "SET name=?, description=?, muscular_zone=?, url=? " \
+                    "WHERE id_exercise = ?"
+            params = (name, description, muscular_zone, url, int(id_exercise))
+            self.db_perform_query(query, params)
+
+            if self.db_manager.row_count() == 0:
+                return json.dumps({"status": kSTATUS_ERR})
+            else:
+                return json.dumps({"status": kSTATUS_OK})
 
         def delete_user(p):
             # check if the user and the application are allowed to access the service
@@ -1091,7 +1044,8 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
             "manage_schedules/delete_single_exercise_schedule": delete_single_schedule,
             "manage_user/create_user": create_user,
             "manage_user/update_user": update_user,
-            "manage_user/look_updated_user": look_updated_user,
+            "manage_schedules/update_exercise_list": update_exercise_list,
+            "manage_schedules/update_exercise": update_exercise,
             "manage_user/delete_user": delete_user,
             "send_messages/create_message": create_message
         }
