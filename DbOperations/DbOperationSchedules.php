@@ -344,7 +344,7 @@ class DbOperationSchedules{
         );
 
         $context  = stream_context_create($options);
-        $result = file_get_contents(MANAGE_EXERCISES.'?'.$data, false, $context);
+        @$result = file_get_contents(MANAGE_EXERCISES.'?'.$data, false, $context);
 
         if(!$result) {
             if (isset($http_response_header) && strpos($http_response_header[0], "401")) {
@@ -622,9 +622,9 @@ class DbOperationSchedules{
         );
 
         $context  = stream_context_create($options);
-        $result = file_get_contents(LOOK_UPDATED_EXERCISE.'?'.$data, false, $context);
+        @$result = file_get_contents(LOOK_UPDATED_EXERCISE.'?'.$data, false, $context);
 
-        /*if(!$result) {
+        if(!$result) {
             if (isset($http_response_header) && strpos($http_response_header[0], "401")) {
                 $error = $http_response_header[0];
             }
@@ -632,7 +632,7 @@ class DbOperationSchedules{
                 $error = "Error 500: Impossible to enstablish a connection with the server! Please, Try in another moment.";
             }
             header( "location: ../Errors/error.php?error=".$error );
-        }*/
+        }
 
         return $result;
     }
@@ -693,9 +693,9 @@ class DbOperationSchedules{
         );
 
         $context  = stream_context_create($options);
-        $result = file_get_contents(UPDATE_EXERCISE, false, $context);
+        @$result = file_get_contents(UPDATE_EXERCISE, false, $context);
 
-        /*if(!$result) {
+        if(!$result) {
             if (isset($http_response_header) && strpos($http_response_header[0], "401")) {
                 $error = $http_response_header[0];
             }
@@ -703,7 +703,7 @@ class DbOperationSchedules{
                 $error = "Error 500: Impossible to enstablish a connection with the server! Please, Try in another moment.";
             }
             header( "location: ../Errors/error.php?error=".$error );
-        }*/
+        }
 
         return $result;
     }
