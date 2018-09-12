@@ -3,10 +3,10 @@
 session_start();
 
 // Check if user is logged in using the session variable
-if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
+if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
 // Makes it easier to read
-$first_name = $_SESSION['first_name'];
-$last_name = $_SESSION['last_name'];
+$first_name = $_COOKIE['first_name'];
+$last_name = $_COOKIE['last_name'];
 ?>
     <!DOCTYPE html>
     <html lang="en">
@@ -105,9 +105,9 @@ $last_name = $_SESSION['last_name'];
          */
 
         // include database connection
-        include 'DbOperation.php';
+        include '../DbOperations/DbOperationMessages.php';
 
-        $conn = new DbOperation();
+        $conn = new DbOperationMessages();
 
         // PAGINATION VARIABLES
         // page is the current page, if there's nothing set, default is page 1
@@ -133,29 +133,28 @@ $last_name = $_SESSION['last_name'];
         </form>
     <br>
         <?php
-        $req = $conn->read_messages($records_per_page, $from_record_num);
+        $req = $conn->read_messages($from_record_num,$records_per_page);
         $res = json_decode($req, True);
         if (in_array('not-found', $res)) {
                 echo "<div class='alert alert-danger'>No Message found.</div>";
         }
         else {
-            for ($i = 0, $l = count($res); $i < $l; ++$i) {
 
-                $id_message = $res[$i]['id_message'];
-                $title = $res[$i]['title'];
-                $send_date = $res[$i]['send_date'];
-                $destination = $res[$i]['destination'];
+            echo "<table class='table table-hover table-responsive table-bordered'>";//start table
 
-                echo "<table class='table table-hover table-responsive table-bordered'>";//start table
+            //creating our table heading
+            echo "<tr>";
+            echo "<th>Title</th>";
+            echo "<th>Date</th>";
+            echo "<th>Destination</th>";
+            echo "<th>Action</th>";
+            echo "</tr>";
+            for ($i = 0, $l = count($res['messages']); $i < $l; ++$i) {
 
-                //creating our table heading
-                echo "<tr>";
-                echo "<th>Title</th>";
-                echo "<th>Date</th>";
-                echo "<th>Destination</th>";
-                echo "<th>Action</th>";
-                echo "</tr>";
-
+                $id_message = $res['messages'][$i]['id_message'];
+                $title = $res['messages'][$i]['title'];
+                $send_date = $res['messages'][$i]['send_date'];
+                $destination = $res['messages'][$i]['destination'];
 
                 echo "<tr>";
                 echo "<td>$title</td>";
@@ -165,13 +164,14 @@ $last_name = $_SESSION['last_name'];
                 // read one record
                 echo "<a href='read_one_message.php?id=$id_message' class='btn btn-info m-r-1em'>Read</a>";
 
-                // end table
-                echo "</table>";
+
             }
+            // end table
+            echo "</table>";
 
             // PAGINATION
             // count total number of rows
-            $total_rows = count($res);
+            $total_rows = $res['total_rows'];
 
             // paginate records
             $page_url="read_messages.php?";

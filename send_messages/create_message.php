@@ -3,10 +3,10 @@
 session_start();
 
 // Check if user is logged in using the session variable
-if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
+if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
 // Makes it easier to read
-    $first_name = $_SESSION['first_name'];
-    $last_name = $_SESSION['last_name'];
+    $first_name = $_COOKIE['first_name'];
+    $last_name = $_COOKIE['last_name'];
     ?>
 <!DOCTYPE html>
     <html lang="en">
@@ -69,14 +69,14 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
  */
 
     // include database connection
-    include 'DbOperation.php';
+    include '../DbOperations/DbOperationMessages.php';
     include '../SendMultiplePush.php';
 
 
     if($_POST){
 
         $send = new SendMultiplePush();
-        $conn = new DbOperation();
+        $conn = new DbOperationMessages();
 
         $load = false;
         $title = $_POST['title'];
@@ -93,7 +93,7 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
         else{
 
             $load = true;
-            /*$now = new DateTime();
+            $now = new DateTime();
             $attuale = $now;
             $datatime = $attuale->format('Y-m-d');
 
@@ -104,7 +104,7 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
 
             }else{
                 echo "<div class='alert alert-danger'>Unable to save the message. Please try again.</div>";
-            }*/
+            }
 
             if ($load == true){
                 $result = $send -> sendNotification($title, $body, $destination, $argument);
@@ -151,7 +151,7 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
                 <td></td>
                 <td>
                     <input type='submit' value='Send' class='btn btn-primary' />
-                    <a onclick="goBack()" class='btn btn-danger'>Back to read messages.</a>
+                    <a href="read_messages.php" class='btn btn-danger'>Back to read messages</a>
                 </td>
             </tr>
         </table>

@@ -3,10 +3,10 @@
 session_start();
 
 // Check if user is logged in using the session variable
-if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
+if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
 // Makes it easier to read
-    $first_name = $_SESSION['first_name'];
-    $last_name = $_SESSION['last_name'];
+    $first_name = $_COOKIE['first_name'];
+    $last_name = $_COOKIE['last_name'];
     ?>
     <!DOCTYPE html>
     <html lang="en">
@@ -68,8 +68,9 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
     $id=isset($_GET['id']) ? $_GET['id'] : die('ERROR: Record ID not found.');
 
     //include database connection
-    include 'DbOperation.php';
-    $conn = new DbOperation();
+    include '../DbOperations/DbOperationMessages.php';
+
+    $conn = new DbOperationMessages();
     $req = $conn->read_one_message($id);
     $mes = json_decode($req, True);
 

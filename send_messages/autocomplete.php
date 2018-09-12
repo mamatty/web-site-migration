@@ -1,22 +1,22 @@
 <?php
 // include database connection
-include 'DbOperation.php';
+include '../DbOperations/DbOperationMessages.php';
 
-$conn = new DbOperation();
+$conn = new DbOperationMessages();
 
 if(isset($_POST["query"]))
 {
     $output = '';
-    $req = $conn->autocomplete_user($_POST["query"]);
+    $req = $conn->autocomplete_message($_POST["query"]);
     $res = json_decode($req,True);
-    if(in_array('not-result',$res)){
-        $output .= '<li>No Message</li>';
-    }else{
-        foreach ($res as $key => $value){
-            $output .= '<li>'.$value.'</li>';
+
+    if(in_array('not-found',$res)){
+        $output .= '<li>No User</li>';
+    }else {
+        for ($i = 0, $l = count($res['message']); $i < $l; ++$i) {
+            $output .= '<li>' . $res['message'][$i][0] . '</li>';
         }
     }
-
     $output .= '</ul>';
     echo $output;
 }

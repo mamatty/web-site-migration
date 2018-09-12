@@ -3,10 +3,10 @@
 session_start();
 
 // Check if user is logged in using the session variable
-if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
+if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
 // Makes it easier to read
-$first_name = $_SESSION['first_name'];
-$last_name = $_SESSION['last_name'];
+$first_name = $_COOKIE['first_name'];
+$last_name = $_COOKIE['last_name'];
 ?>
     <!DOCTYPE html>
     <html lang="en">
@@ -105,9 +105,9 @@ $last_name = $_SESSION['last_name'];
      */
 
     // include database connection
-    include 'DbOperation.php';
+    include '../DbOperations/DbOperationMessages.php';
 
-    $conn = new DbOperation();
+    $conn = new DbOperationMessages();
 
     // PAGINATION VARIABLES
     // page is the current page, if there's nothing set, default is page 1
@@ -142,25 +142,27 @@ $last_name = $_SESSION['last_name'];
         $req = $conn->search_message($_GET['search'],$records_per_page,$from_record_num);
         $mes = json_decode($req, True);
 
-        if (in_array('not-found', $mes)) {
+        if ($mes['total_rows'] == 0) {
             echo "<div class='alert alert-danger'>No Message found.</div>";
         } else {
-            for ($i = 0, $l = count($mes); $i < $l; ++$i) {
 
-                $id_message = $mes[$i]['id_message'];
-                $title = $mes[$i]['title'];
-                $send_date = $mes[$i]['send_date'];
-                $destination = $mes[$i]['destination'];
+            echo "<table class='table table-hover table-responsive table-bordered'>";//start table
 
-                echo "<table class='table table-hover table-responsive table-bordered'>";//start table
+            //creating our table heading
+            echo "<tr>";
+            echo "<th>Title</th>";
+            echo "<th>Date</th>";
+            echo "<th>Destination</th>";
+            echo "<th>Action</th>";
+            echo "</tr>";
+            for ($i = 0, $l = count($mes['messages']); $i < $l; ++$i) {
 
-                //creating our table heading
-                echo "<tr>";
-                echo "<th>Title</th>";
-                echo "<th>Date</th>";
-                echo "<th>Destination</th>";
-                echo "<th>Action</th>";
-                echo "</tr>";
+                $id_message = $mes['messages'][$i]['id_message'];
+                $title = $mes['messages'][$i]['title'];
+                $send_date = $mes['messages'][$i]['send_date'];
+                $destination = $mes['messages'][$i]['destination'];
+
+
 
                 echo "<tr>";
                 echo "<td>$title</td>";
@@ -169,14 +171,13 @@ $last_name = $_SESSION['last_name'];
                 echo "<td>";
                 // read one record
                 echo "<a href='read_one_message.php?id=$id_message' class='btn btn-info m-r-1em'>Read</a>";
-
-                // end table
-                echo "</table>";
             }
+            // end table
+            echo "</table>";
 
             // PAGINATION
             // count total number of rows
-            $total_rows = count($mes);
+            $total_rows = $mes['total_rows'];
 
             // paginate records
             $page_url="search_user.php?";
