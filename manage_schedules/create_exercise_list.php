@@ -3,10 +3,10 @@
 session_start();
 
 // Check if user is logged in using the session variable
-if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
+if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
     // Makes it easier to read
-    $first_name = $_SESSION['first_name'];
-    $last_name = $_SESSION['last_name'];
+    $first_name = $_COOKIE['first_name'];
+    $last_name = $_COOKIE['last_name'];
 ?>
 
 <!DOCTYPE html>
@@ -92,25 +92,34 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
     if($_POST){
         try{
             // include database connection
-            include 'DbOperation.php';
+            include '../DbOperations/DbOperationSchedules.php';
 
-            $conn = new DbOperation();
+            $conn = new DbOperationSchedules();
 
             $name = $_POST['name'];
             $description = $_POST['description'];
-            $muscolar_zone = $_POST['muscolar_zone'];
+            $muscular_zone = $_POST['muscular_zone'];
             $url = $_POST['url'];
-            if (filter_var($url, FILTER_VALIDATE_URL)){
-                $req = $conn->create_exercise_list($name,$description,$muscolar_zone,$url);
+            $url_youtube = explode("?",$url)[0];
+
+            if ($name == ''){
+                echo "<div class='alert alert-danger'>Please insert a valid name.</div>";
+            }
+
+            if (strpos('https://www.youtube.com/watch',$url_youtube) !== false ){
+                $req = $conn->create_exercise_list($name,$description,$muscular_zone,$url);
                 $ex_list = json_decode($req, True);
 
-                if (in_array('successful',$ex_list)) {
+                if(in_array('successful',$ex_list)) {
                     echo "<div class='alert alert-success'>Exercise was inserted.</div>";
                 }else{
                     echo "<div class='alert alert-danger'>Impossible to insert the exercise!</div>";
                     throw new Exception();
                 }
-            } echo "<div class='alert alert-success'>URL not valid.</div>";
+            }else{
+                echo "<div class='alert alert-danger'>Not a valid youtube video URL.</div>";
+            }
+
 
         }
         catch (Exception $e){
@@ -131,11 +140,11 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
             </tr>
             <tr>
                 <td>Muscolar Zone</td>
-                <td><input type='text' name='muscolar_zone' class='form-control'></textarea></td>
+                <td><input type='text' name='muscular_zone' class='form-control'></textarea></td>
             </tr>
             <tr>
                 <td>URL</td>
-                <td><input type='text' name='url' class='form-control'></textarea></td>
+                <td><input type='text' name='url' placeholder="YouTube URL for the exercise that you are inserting!" class='form-control'></textarea></td>
             </tr>
             <tr>
                 <td></td>

@@ -3,10 +3,10 @@
 session_start();
 
 // Check if user is logged in using the session variable
-if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
+if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
     // Makes it easier to read
-    $first_name = $_SESSION['first_name'];
-    $last_name = $_SESSION['last_name'];
+    $first_name = $_COOKIE['first_name'];
+    $last_name = $_COOKIE['last_name'];
     ?>
     <!DOCTYPE html>
     <html lang="en">
@@ -106,9 +106,9 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
         $id=isset($_GET['id']) ? $_GET['id'] : die('ERROR: Record ID not found.');
 
         // include database connection
-        include 'DbOperation.php';
+        include '../DbOperations/DbOperationSchedules.php';
 
-        $conn = new DbOperation();
+        $conn = new DbOperationSchedules();
 
         // PAGINATION VARIABLES
         // page is the current page, if there's nothing set, default is page 1
@@ -143,31 +143,32 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
         $req = $conn->manage_exercises($id,$records_per_page,$from_record_num);
         $ex = json_decode($req, True);
 
-        if (in_array('exercise-not-found',$ex)) {
+        if (in_array('not-found',$ex)) {
             echo "<div class='alert alert-danger'>No exercise found.</div>";
-        }elseif(in_array('exercise_name-not-found',$ex)) {
+        }elseif(in_array('exercise-not-found',$ex)) {
             echo "<div class='alert alert-danger'>Some exercise has been removed.</div>";
         }else{
-            for($i = 0, $l = count($ar); $i < $l; ++$i) {
-                $day = $ex[$i]['day'];
-                $name = $ex[$i]['name'];
-                $ripetitions = $ex[$i]['ripetitions'];
-                $weight = $ex[$i]['weight'];
-                $details = $ex[$i]['details'];
-                $id_list = $ex[$i]['id_list'];
-                $id_exercise = $ex[$i]['id_exercise'];
+            echo "<table class='table table-hover table-responsive table-bordered'>";//start table
 
-                echo "<table class='table table-hover table-responsive table-bordered'>";//start table
+            //creating our table heading
+            echo "<tr>";
+            echo "<th>Day</th>";
+            echo "<th>Name</th>";
+            echo "<th>Ripetitions</th>";
+            echo "<th>Weight</th>";
+            echo "<th>Details</th>";
+            echo "<th>Action</th>";
+            echo "</tr>";
 
-                //creating our table heading
-                echo "<tr>";
-                echo "<th>Day</th>";
-                echo "<th>Name</th>";
-                echo "<th>Ripetitions</th>";
-                echo "<th>Weight</th>";
-                echo "<th>Details</th>";
-                echo "<th>Action</th>";
-                echo "</tr>";
+            for($i = 0, $l = count($ex['exercises']); $i < $l; ++$i) {
+                $day = $ex['exercises'][$i]['day'];
+                $name = $ex['exercises'][$i]['name'];
+                $ripetitions = $ex['exercises'][$i]['repetitions'];
+                $weight = $ex['exercises'][$i]['weight'];
+                $details = $ex['exercises'][$i]['details'];
+                $id_list = $ex['exercises'][$i]['id_list'];
+                $id_exercise = $ex['exercises'][$i]['id_exercise'];
+
 
                 // creating new table row per record
                 echo "<tr>";
@@ -185,13 +186,14 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
 
                 // we will use this links on next part of this post
                 echo "<a href='#' onclick='delete_exercise($id_list);'  class='btn btn-danger'>Delete</a>";
-                echo "</td>";
-                echo "</tr>";
 
-                // end table
-                echo "</table>";
             }
-            $total_rows = count($ex);
+            echo "</td>";
+            echo "</tr>";
+
+            // end table
+            echo "</table>";
+            $total_rows = $ex['total_rows'];
 
             // paginate records
             $page_url="manage_exercises.php?";

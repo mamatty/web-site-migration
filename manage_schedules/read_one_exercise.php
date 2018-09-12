@@ -3,10 +3,10 @@
 session_start();
 
 // Check if user is logged in using the session variable
-if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
+if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
 // Makes it easier to read
-    $first_name = $_SESSION['first_name'];
-    $last_name = $_SESSION['last_name'];
+    $first_name = $_COOKIE['first_name'];
+    $last_name = $_COOKIE['last_name'];
     ?>
     <!DOCTYPE html>
     <html lang="en">
@@ -64,14 +64,14 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
     $id=isset($_GET['id']) ? $_GET['id'] : die('ERROR: Record ID not found.');
 
     //include database connection
-    include 'DbOperation.php';
-    $conn = new DbOperation();
+    include '../DbOperations/DbOperationSchedules.php';
+    $conn = new DbOperationSchedules();
     $res = $conn->read_one_exercise($id);
     $ex = json_decode($res, True);
     if($ex['status'] == 'found'){
         $name = $ex['name'];
         $description = $ex['description'];
-        $muscolar_zone = $ex['muscolar_zone'];
+        $muscolar_zone = $ex['muscular_zone'];
     }else{
         echo "<div class='alert alert-danger'>Impossible to read the exercise.</div>";
     }

@@ -3,10 +3,12 @@
 session_start();
 
 // Check if user is logged in using the session variable
-if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
+if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
     // Makes it easier to read
-    $first_name = $_SESSION['first_name'];
-    $last_name = $_SESSION['last_name'];
+    $first_name = $_COOKIE['first_name'];
+    $last_name = $_COOKIE['last_name'];
+    $app_id = $_COOKIE['app-id'];
+    $token = $_COOKIE['token'];
     ?>
     <!DOCTYPE html>
     <html lang="en">
@@ -104,9 +106,9 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
          */
 
         // include database connection
-        include 'DbOperation.php';
+        include '../DbOperations/DbOperationSchedules.php';
 
-        $conn = new DbOperation();
+        $conn = new DbOperationSchedules();
 
         // PAGINATION VARIABLES
         // page is the current page, if there's nothing set, default is page 1
@@ -118,10 +120,17 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
         // calculate for the query LIMIT clause
         $from_record_num = ($records_per_page * $page) - $records_per_page;
 
+        $action = isset($_GET['action']) ? $_GET['action'] : "";
+
+        // if it was redirected from delete.php
+        if($action=='deleted'){
+            echo "<div class='alert alert-success'>Exercise was deleted.</div>";
+        }
+
         echo "<td>";
-        echo "<a href='create_exercise_list.php?' class='btn btn-primary m-b-1em'>Create New Exercise</a>";
+        echo "<a href='create_exercise_list.php' class='btn btn-primary m-b-1em'>Create New Exercise</a>";
         echo "<a> </a>";
-        echo "<a href='manage_users.php' class='btn btn-primary m-b-1em'>Home</a>";
+        echo "<a href='manage_users.php' class='btn btn-danger'>Home</a>";
         echo "</td>";
         ?>
     <br>
@@ -140,21 +149,21 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
             echo "<div class='alert alert-danger'>No Exercises found.</div>";
         }
         else {
-            for ($i = 0, $l = count($ex); $i < $l; ++$i) {
-                $name = $ex[$i]['name'];
-                $description = $ex[$i]['description'];
-                $muscolar_zone = $ex[$i]['muscolar_zone'];
-                $id_exercise = $ex[$i]['id_exercise'];
 
-                echo "<table class='table table-hover table-responsive table-bordered'>";//start table
+            echo "<table class='table table-hover table-responsive table-bordered'>";//start table
 
-                //creating our table heading
-                echo "<tr>";
-                echo "<th>Name</th>";
-                echo "<th>Description</th>";
-                echo "<th>Muscolar Zone</th>";
-                echo "<th>Action</th>";
-                echo "</tr>";
+            //creating our table heading
+            echo "<tr>";
+            echo "<th>Name</th>";
+            echo "<th>Description</th>";
+            echo "<th>Muscolar Zone</th>";
+            echo "<th>Action</th>";
+            echo "</tr>";
+            for ($i = 0, $l = count($ex['exercises']); $i < $l; ++$i) {
+                $name = $ex['exercises'][$i]['name'];
+                $description = $ex['exercises'][$i]['description'];
+                $muscolar_zone = $ex['exercises'][$i]['muscular_zone'];
+                $id_exercise = $ex['exercises'][$i]['id_exercise'];
 
                 echo "<tr>";
                 echo "<td>$name</td>";
@@ -167,16 +176,16 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
 
                 // we will use this links on next part of this post
                 echo "<a href='#' onclick='delete_exercise(".$id_exercise.");'  class='btn btn-danger'>Delete</a>";
-                echo "</td>";
-                echo "</tr>";
 
-                // end table
-                echo "</table>";
             }
+            echo "</td>";
+            echo "</tr>";
 
+            // end table
+            echo "</table>";
             // PAGINATION
             // count total number of rows
-            $total_rows = count($ex);
+            $total_rows = $ex['total_rows'][0];
 
             // paginate records
             $page_url="read_exercises.php?";
@@ -229,7 +238,7 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
         });
         $(document).on('click', 'li', function(){
             $('#search').val($(this).text());
-            $('#searchList').fadeOut();
+            window.location = 'search_exercise_list.php?search=' + $(this).data('name');
         });
     });
 </script>

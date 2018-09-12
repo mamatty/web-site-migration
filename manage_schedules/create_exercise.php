@@ -3,10 +3,10 @@
 session_start();
 
 // Check if user is logged in using the session variable
-if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
+if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
     // Makes it easier to read
-    $first_name = $_SESSION['first_name'];
-    $last_name = $_SESSION['last_name'];
+    $first_name = $_COOKIE['first_name'];
+    $last_name = $_COOKIE['last_name'];
 ?>
 
 <!DOCTYPE html>
@@ -94,9 +94,9 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
     if($_POST){
         try{
 
-            include 'DbOperation.php';
+            include '../DbOperations/DbOperationSchedules.php';
 
-            $conn = new DbOperation();
+            $conn = new DbOperationSchedules();
 
             $name = $_POST['name'];
             $detail = $_POST['detail'];
@@ -106,6 +106,19 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
 
             if($_POST['day'] < 1 or $_POST['day'] > 7){
                 echo "<div class='alert alert-danger'>Day not valid.</div>";
+                throw new Exception();
+            }
+            if($_POST['weight'] < 0 or $_POST['weight'] > 999){
+                echo "<div class='alert alert-danger'>Weight not valid! Max 999 kg</div>";
+                throw new Exception();
+            }
+            if($_POST['series'] < 0 or $_POST['series'] > 999){
+                echo "<div class='alert alert-danger'>Series not valid! Max 999.</div>";
+                throw new Exception();
+            }
+            if ($name == ''){
+                echo "<div class='alert alert-danger'>Please insert a valid name.</div>";
+                throw new Exception();
             }
 
             $req = $conn->create_exercise($id,$name,$day,$series,$weight,$detail);
@@ -119,7 +132,7 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
                 throw new Exception();
             }
             else{
-                echo "<div class='alert alert-danger'>Exercise name not found.</div>";
+                echo "<div class='alert alert-danger'>Exercise name not found. Please insert an exercise name present inside the database (check the <a href='read_exercises.php'>exercise list</a>!)</div>";
                 throw new Exception();
             }
         }
@@ -137,20 +150,20 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
                     <div id="nameList"></div></td>
             </tr>
             <tr>
-                <td>Detail</td>
+                <td>Details for the user</td>
                 <td><input type='text' name='detail' class='form-control'></textarea></td>
             </tr>
             <tr>
                 <td>Day</td>
-                <td><input type='number' name='day' class='form-control'></textarea></td>
+                <td><input type='number' name='day' class='form-control' ></textarea></td>
             </tr>
             <tr>
                 <td>Weight</td>
-                <td><input type='text' name='weight' class='form-control'></textarea></td>
+                <td><input type='number' name='weight' class='form-control'  ></textarea></td>
             </tr>
             <tr>
                 <td>Series</td>
-                <td><input type='text' name='series' class='form-control'></textarea></td>
+                <td><input type='number' name='series' class='form-control' ></textarea></td>
             </tr>
             <tr>
                 <td></td>

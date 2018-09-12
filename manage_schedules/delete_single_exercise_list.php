@@ -7,8 +7,8 @@
  */
 try{
     //include database connection
-    include 'DbOperation.php';
-    $conn = new DbOperation();
+    include '../DbOperations/DbOperationSchedules.php';
+    $conn = new DbOperationSchedules();
 
     // isset() is a PHP function used to verify if a value is there or not
     $id=isset($_GET['id']) ? $_GET['id'] : die('ERROR: Record ID not found.');

@@ -3,10 +3,10 @@
 session_start();
 
 // Check if user is logged in using the session variable
-if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
+if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
     // Makes it easier to read
-    $first_name = $_SESSION['first_name'];
-    $last_name = $_SESSION['last_name'];
+    $first_name = $_COOKIE['first_name'];
+    $last_name = $_COOKIE['last_name'];
 ?>
 
 <!DOCTYPE html>
@@ -94,9 +94,9 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
     if($_POST){
         try{
             // include database connection
-            include 'DbOperation.php';
+            include '../DbOperations/DbOperationSchedules.php';
 
-            $conn = new DbOperation();
+            $conn = new DbOperationSchedules();
 
             $name = $_POST['name'];
             $detail = $_POST['detail'];
@@ -104,6 +104,11 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
             $end_date = $_POST['end_date'];
             $num_days = $_POST['num_days'];
             $objective = $_POST['objective'];
+
+            if ($name == ''){
+                echo "<div class='alert alert-danger'>Please insert a valid name.</div>";
+                throw new Exception();
+            }
 
             if($_POST['num_days'] < 1 or $_POST['num_days'] > 7){
                 echo "<div class='alert alert-danger'>Day not valid.</div>";
@@ -115,7 +120,7 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
             $datatime = $attuale->format('Y-m-d');
 
             if($_POST['start_date'] < $datatime or $_POST['end_date'] < $datatime or $_POST['start_date'] == $_POST['end_date']){
-                echo "<div class='alert alert-danger'>Start date or/and end date not valid.</div>";
+                echo "<div class='alert alert-danger'>Start date or/and end date not valid. Schedule must have at least 24 h of validity!</div>";
                 throw new Exception();
             }
 
@@ -165,7 +170,7 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
                 <td></td>
                 <td>
                     <input type='submit' value='Save' class='btn btn-primary' />
-                    <a href="manage_users.php" class='btn btn-danger'>Back to read exercises</a>
+                    <a href="manage_users.php" class='btn btn-danger'>Back to read users</a>
                 </td>
             </tr>
         </table>

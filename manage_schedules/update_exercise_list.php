@@ -3,10 +3,10 @@
 session_start();
 
 // Check if user is logged in using the session variable
-if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
+if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
 // Makes it easier to read
-$first_name = $_SESSION['first_name'];
-$last_name = $_SESSION['last_name'];
+$first_name = $_COOKIE['first_name'];
+$last_name = $_COOKIE['last_name'];
 ?>
 <!DOCTYPE html>
     <html lang="en">
@@ -71,17 +71,18 @@ $last_name = $_SESSION['last_name'];
     $id=isset($_GET['id']) ? $_GET['id'] : die('ERROR: Record ID not found.');
 
     //include database connection
-    include 'DbOperation.php';
-    $conn = new DbOperation();
+    include '../DbOperations/DbOperationSchedules.php';
+    $conn = new DbOperationSchedules();
 
     // read current record's data
     $res = $conn->look_updated_exercise_list($id);
     $ex = json_decode($res,True);
-    if($ex['status'] == 'found'){
+    if($ex['status'] == 'found') {
         $name = $ex['name'];
-        $day = $ex['day'];
-        $detail = $ex['detail'];
-        $weight = $ex['weight'];
+        $description = $ex['description'];
+        $muscular_zone = $ex['muscular_zone'];
+        $url = $ex['url'];
+
     }else{
         echo "<div class='alert alert-danger'>Exercise not found</div>";
     }
@@ -93,21 +94,28 @@ $last_name = $_SESSION['last_name'];
     if($_POST){
 
         try{
+            if ($_POST['name'] == ''){
+                echo "<div class='alert alert-danger'>Please insert a valid name.</div>";
+            }
             // read current record's data
-            $res_up = $conn->update_exercise_list($id, $_POST['name'], $_POST['description'], $_POST['muscolar_zone'], $_POST['url']);
+            $res_up = $conn->update_exercise_list($id, $_POST['name'], $_POST['description'], $_POST['muscular_zone'], $_POST['url']);
             $ex_up = json_decode($res,True);
             if(in_array('not-updated', $ex_up)) {
                 echo "<div class='alert alert-danger'>Unable to update exercise. Please try again.</div>";
                 throw new Exception();
             } else {
 
-                $name = $ex_up['name'];
-                $description = $ex_up['description'];
-                $muscolar_zone = $ex_up['muscolar_zone'];
-                $url = $ex_up['url'];
+                // read current record's data
+                $res = $conn->look_updated_exercise_list($id);
+                $ex = json_decode($res,True);
+                if($ex['status'] == 'found') {
+                    $name = $ex['name'];
+                    $description = $ex['description'];
+                    $muscular_zone = $ex['muscular_zone'];
+                    $url = $ex['url'];
 
                     echo "<div class='alert alert-success'>Exercise was updated.</div>";
-
+                }
             }
         }
         catch (Exception $e){
@@ -119,16 +127,15 @@ $last_name = $_SESSION['last_name'];
         <table class='table table-hover table-responsive table-bordered'>
             <tr>
                 <td>Name</td>
-                <td><input type="text" required autocomplete="off" name="name" id="name" value="<?php echo htmlspecialchars($name, ENT_QUOTES);  ?>" class='form-control' />
-                    <div id="nameList"></div></td>
+                <td><input type="text" name="name" value="<?php echo htmlspecialchars($name, ENT_QUOTES);  ?>" class='form-control' /></td>
             </tr>
             <tr>
                 <td>Description</td>
-                <td><input type='text' required autocomplete="off" name='description'  value="<?php echo htmlspecialchars($description, ENT_QUOTES);  ?>" class='form-control' /></td>
+                <td><input type='text' name='description'  value="<?php echo htmlspecialchars($description, ENT_QUOTES);  ?>" class='form-control' /></td>
             </tr>
             <tr>
                 <td>Muscolar Zone</td>
-                <td><input type='text' name='muscolar_zone' value="<?php echo htmlspecialchars($muscolar_zone, ENT_QUOTES);  ?>" class='form-control' /></td>
+                <td><input type='text' name='muscular_zone' value="<?php echo htmlspecialchars($muscular_zone, ENT_QUOTES);  ?>" class='form-control' /></td>
             </tr>
             <tr>
                 <td>URL</td>
@@ -159,30 +166,6 @@ $last_name = $_SESSION['last_name'];
 </body>
 </html>
 
-<script>
-    $(document).ready(function(){
-        $('#name').keyup(function(){
-            let query = $(this).val();
-            if(query != '')
-            {
-                $.ajax({
-                    url:"autocomplete_exercise.php",
-                    method:"POST",
-                    data:{query:query},
-                    success:function(data)
-                    {
-                        $('#nameList').fadeIn();
-                        $('#nameList').html(data);
-                    }
-                });
-            }
-        });
-        $(document).on('click', 'li', function(){
-            $('#name').val($(this).text());
-            $('#nameList').fadeOut();
-        });
-    });
-</script>
     <?php
     }
     else {

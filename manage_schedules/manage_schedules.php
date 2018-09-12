@@ -3,10 +3,10 @@
 session_start();
 
 // Check if user is logged in using the session variable
-if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
+if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
     // Makes it easier to read
-    $first_name = $_SESSION['first_name'];
-    $last_name = $_SESSION['last_name'];
+    $first_name = $_COOKIE['first_name'];
+    $last_name = $_COOKIE['last_name'];
     ?>
     <!DOCTYPE html>
     <html lang="en">
@@ -106,9 +106,9 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
         $id=isset($_GET['id']) ? $_GET['id'] : die('ERROR: Record ID not found.');
 
         // include database connection
-        include 'DbOperation.php';
+        include '../DbOperations/DbOperationSchedules.php';
 
-        $conn = new DbOperation();
+        $conn = new DbOperationSchedules();
 
         // PAGINATION VARIABLES
         // page is the current page, if there's nothing set, default is page 1
@@ -136,7 +136,7 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
     <br>
 
     <?php
-    $check = $conn->account_profile($_SESSION['cookie']);
+    $check = $conn->account_profile($id);
     $account = json_decode($check, True);
     if (in_array('found',$account)) {
         ?>
@@ -148,32 +148,30 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
         <?php
         $res = $conn->manage_schedules($id, $records_per_page, $from_record_num);
         $schedule = json_decode($res, True);
-        if (in_array('not-found', $schedule)) {
+        if ($schedule['total_rows'] == 0) {
             echo "<div class='alert alert-danger'>No Schedule found.</div>";
         } else {
+            echo "<table class='table table-hover table-responsive table-bordered'>";//start table
 
-            for ($i = 0, $l = count($schedule); $i < $l; ++$i) {
-                $id_schedule = $schedule[$i]['id_schedule'];
-                $name = $schedule[$i]['name'];
-                $details = $schedule[$i]['details'];
-                $start_date = $schedule[$i]['start_date'];
-                $end_date = $schedule[$i]['end_date'];
-                $num_days = $schedule[$i]['num_days'];
-                $objective = $schedule[$i]['objective'];
+            //creating our table heading
+            echo "<tr>";
+            echo "<th>Name</th>";
+            echo "<th>Detail</th>";
+            echo "<th>Start Date</th>";
+            echo "<th>End Date</th>";
+            echo "<th>Number of days</th>";
+            echo "<th>Objective</th>";
+            echo "<th>Action</th>";
+            echo "</tr>";
 
-                echo "<table class='table table-hover table-responsive table-bordered'>";//start table
-
-                //creating our table heading
-                echo "<tr>";
-                echo "<th>Name</th>";
-                echo "<th>Detail</th>";
-                echo "<th>Start Date</th>";
-                echo "<th>End Date</th>";
-                echo "<th>Number of days</th>";
-                echo "<th>Objective</th>";
-                echo "<th>Action</th>";
-                echo "</tr>";
-
+            for ($i = 0, $l = count($schedule['schedules']); $i < $l; ++$i) {
+                $id_schedule = $schedule['schedules'][$i]['id_schedule'];
+                $name = $schedule['schedules'][$i]['name'];
+                $details = $schedule['schedules'][$i]['details'];
+                $start_date = $schedule['schedules'][$i]['start_date'];
+                $end_date = $schedule['schedules'][$i]['end_date'];
+                $num_days = $schedule['schedules'][$i]['num_days'];
+                $objective = $schedule['schedules'][$i]['objective'];
 
                 // creating new table row per record
                 echo "<tr>";
@@ -189,17 +187,17 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
 
                 // we will use this links on next part of this post
                 echo "<a href='#' onclick='delete_schedule($id_schedule);'  class='btn btn-danger'>Delete</a>";
-                echo "</td>";
-                echo "</tr>";
 
-                // end table
-                echo "</table>";
             }
+            echo "</td>";
+            echo "</tr>";
 
+            // end table
+            echo "</table>";
 
             // PAGINATION
             // count total number of rows
-            $total_rows = count($schedule);
+            $total_rows = $schedule['total_rows'];
 
             // paginate records
             $page_url = "manage_schedules.php?";

@@ -3,10 +3,10 @@
 session_start();
 
 // Check if user is logged in using the session variable
-if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
+if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
 // Makes it easier to read
-$first_name = $_SESSION['first_name'];
-$last_name = $_SESSION['last_name'];
+$first_name = $_COOKIE['first_name'];
+$last_name = $_COOKIE['last_name'];
 ?>
 <!DOCTYPE html>
     <html lang="en">
@@ -104,9 +104,9 @@ $last_name = $_SESSION['last_name'];
          */
 
         // include database connection
-        include 'DbOperation.php';
+        include '../DbOperations/DbOperationSchedules.php';
 
-        $conn = new DbOperation();
+        $conn = new DbOperationSchedules();
 
         // PAGINATION VARIABLES
         // page is the current page, if there's nothing set, default is page 1
@@ -141,27 +141,26 @@ $last_name = $_SESSION['last_name'];
         // select all data
         if(isset($_GET['search'])) {
 
-            $res = $conn->search_exercise_list($_GET['search'],$records_per_page,$from_record_num);
+            $res = $conn->search_exercise_list($_GET['search']);
             $ex = json_decode($res, True);
             if (in_array('not-found', $ex)) {
                 echo "<div class='alert alert-danger'>No Exercises found.</div>";
             } else {
-                for ($i = 0, $l = count($ex); $i < $l; ++$i) {
+                echo "<table class='table table-hover table-responsive table-bordered'>";//start table
 
-                    $id_exercise = $ex[$i]['id_exercise'];
-                    $description = $ex[$i]['description'];
-                    $muscolar_zone = $ex[$i]['muscolar_zone'];
-                    $name = $ex[$i]['name'];
+                //creating our table heading
+                echo "<tr>";
+                echo "<th>Name</th>";
+                echo "<th>Description</th>";
+                echo "<th>Muscolar Zone</th>";
+                echo "<th>Action</th>";
+                echo "</tr>";
+                for ($i = 0, $l = count($ex['exercises']); $i < $l; ++$i) {
 
-                    echo "<table class='table table-hover table-responsive table-bordered'>";//start table
-
-                    //creating our table heading
-                    echo "<tr>";
-                    echo "<th>Name</th>";
-                    echo "<th>Description</th>";
-                    echo "<th>Muscolar Zone</th>";
-                    echo "<th>Action</th>";
-                    echo "</tr>";
+                    $id_exercise = $ex['exercises'][$i]['id_exercise'];
+                    $description = $ex['exercises'][$i]['description'];
+                    $muscolar_zone = $ex['exercises'][$i]['muscular_zone'];
+                    $name = $ex['exercises'][$i]['name'];
 
                     echo "<tr>";
                     echo "<td>$name</td>";
@@ -174,12 +173,13 @@ $last_name = $_SESSION['last_name'];
 
                     // we will use this links on next part of this post
                     echo "<a href='#' onclick='delete_exercise($id_exercise);'  class='btn btn-danger'>Delete</a>";
-                    echo "</td>";
-                    echo "</tr>";
 
-                    // end table
-                    echo "</table>";
                 }
+                echo "</td>";
+                echo "</tr>";
+
+                // end table
+                echo "</table>";
                 // PAGINATION
                 // count total number of rows
                 $total_rows = count($ex);
@@ -235,7 +235,7 @@ $last_name = $_SESSION['last_name'];
         });
         $(document).on('click', 'li', function(){
             $('#search').val($(this).text());
-            $('#searchList').fadeOut();
+            window.location = 'search_exercise_list.php?search=' + $(this).data('name');
         });
     });
 </script>

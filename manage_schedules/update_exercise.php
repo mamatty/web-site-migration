@@ -3,10 +3,10 @@
 session_start();
 
 // Check if user is logged in using the session variable
-if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
+if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
 // Makes it easier to read
-$first_name = $_SESSION['first_name'];
-$last_name = $_SESSION['last_name'];
+$first_name = $_COOKIE['first_name'];
+$last_name = $_COOKIE['last_name'];
 ?>
 <!DOCTYPE html>
     <html lang="en">
@@ -71,8 +71,8 @@ $last_name = $_SESSION['last_name'];
     $id=isset($_GET['id']) ? $_GET['id'] : die('ERROR: Record ID not found.');
 
     //include database connection
-    include 'DbOperation.php';
-    $conn = new DbOperation();
+    include '../DbOperations/DbOperationSchedules.php';
+    $conn = new DbOperationSchedules();
 
     // read current record's data
     $res = $conn->look_updated_exercise($id);
@@ -81,9 +81,9 @@ $last_name = $_SESSION['last_name'];
         $id_exercise = $ex['id_exercise'];
         $name = $ex['name'];
         $day = $ex['day'];
-        $detail = $ex['detail'];
+        $detail = $ex['details'];
         $weight = $ex['weight'];
-        $ripetitions = $ex['ripetitions'];
+        $ripetitions = $ex['repetitions'];
     }
     elseif($ex['status'] == 'exercise-not-found'){
         echo "<div class='alert alert-danger'>Exercise not found</div>";
@@ -101,27 +101,31 @@ $last_name = $_SESSION['last_name'];
         try{
             if($_POST['day'] < 1 or $_POST['day'] > 7){
                 echo "<div class='alert alert-danger'>Day not valid.</div>";
+                throw new Exception();
             }
             // read current record's data
-            $res_up = $conn->update_exercise($id, $_POST['name'], $_POST['day'], $_POST['ripetitions'], $_POST['weight'], $_POST['detail']);
+            $res_up = $conn->update_exercise($id, $_POST['day'], $_POST['ripetitions'], $_POST['weight'], $_POST['detail']);
             $ex_up = json_decode($res,True);
+
             if (in_array('not-found', $ex_up)) {
                 echo "<div class='alert alert-danger'>Exercise name not found.</div>";
                 throw new Exception();
             }
-            elseif(in_array('not-updated', $ex_up)) {
-                echo "<div class='alert alert-danger'>Unable to update exercise. Please try again.</div>";
-                throw new Exception();
-            } else {
+            else {
 
-                $id_exercise = $ex_up['id_exercise'];
-                $name = $ex_up['name'];
-                $day = $ex_up['day'];
-                $detail = $ex_up['detail'];
-                $weight = $ex_up['weight'];
-                $ripetitions = $ex_up['ripetitions'];
+                // read current record's data
+                $res = $conn->look_updated_exercise($id);
+                $ex = json_decode($res,True);
+                if($ex['status'] == 'found') {
+                    $id_exercise = $ex['id_exercise'];
+                    $name = $ex['name'];
+                    $day = $ex['day'];
+                    $detail = $ex['details'];
+                    $weight = $ex['weight'];
+                    $ripetitions = $ex['repetitions'];
 
-                echo "<div class='alert alert-success'>Exercise was updated.</div>";
+                    echo "<div class='alert alert-success'>Exercise was updated.</div>";
+                }
             }
         }
         catch (Exception $e){
@@ -132,25 +136,24 @@ $last_name = $_SESSION['last_name'];
     <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"] . "?id={$id}");?>" method="post"><!--we have our html table here where the record will be displayed-->
         <table class='table table-hover table-responsive table-bordered'>
             <tr>
-                <td>Name</td>
-                <td><input type="text" required autocomplete="off" name="name" id="name" value="<?php echo htmlspecialchars($name, ENT_QUOTES);  ?>" class='form-control' />
-                    <div id="nameList"></div></td>
+                <td>Exercise name </td>
+                <td><strong><?php echo htmlspecialchars($name, ENT_QUOTES);  ?></strong></td>
+            </tr>
+            <tr>
+                <td>Details for user</td>
+                <td><input type='text' name='detail' value="<?php echo htmlspecialchars($detail, ENT_QUOTES);  ?>" class='form-control' /></td>
             </tr>
             <tr>
                 <td>Day</td>
                 <td><input type='number' required autocomplete="off" name='day' maxlength="1" value="<?php echo htmlspecialchars($day, ENT_QUOTES);  ?>" class='form-control' /></td>
             </tr>
             <tr>
-                <td>Detail for user</td>
-                <td><input type='text' name='detail' value="<?php echo htmlspecialchars($detail, ENT_QUOTES);  ?>" class='form-control' /></td>
-            </tr>
-            <tr>
                 <td>Weight</td>
-                <td><input type='text' name='weight' value="<?php echo htmlspecialchars($weight, ENT_QUOTES);  ?>" class='form-control' /></td>
+                <td><input type='number' name='weight' value="<?php echo htmlspecialchars($weight, ENT_QUOTES);  ?>" class='form-control' /></td>
             </tr>
             <tr>
-                <td>Ripetitions</td>
-                <td><input type='text' name='ripetitions' value="<?php echo htmlspecialchars($ripetitions, ENT_QUOTES);  ?>" class='form-control' /></td>
+                <td>Repetitions</td>
+                <td><input type='number' name='ripetitions' value="<?php echo htmlspecialchars($ripetitions, ENT_QUOTES);  ?>" class='form-control' /></td>
             </tr>
             <tr>
                 <td></td>
