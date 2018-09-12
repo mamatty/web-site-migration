@@ -1,12 +1,24 @@
 <?php
 /* Displays user information and some useful messages */
 session_start();
+ob_start();
 
 // Check if user is logged in using the session variable
-if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
+if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
      // Makes it easier to read
-    $first_name = $_SESSION['first_name'];
-    $last_name = $_SESSION['last_name'];
+    $first_name = $_COOKIE['first_name'];
+    $last_name = $_COOKIE['last_name'];
+
+    require_once '../DbOperations/Config.php';
+
+    $host = IP_ADDRESS;
+    $port = PORT;
+    $waitTimeoutInSeconds = 1;
+    if(!$fp = fsockopen($host,$port,$errCode,$errStr,$waitTimeoutInSeconds)){
+        $error = "Error 500: Impossible to enstablish a connection with the server! Please, Try in another moment.";
+        header( "location: ../Errors/error.php?error=".$error );
+    }
+
     ?>
 
     <!DOCTYPE html>
