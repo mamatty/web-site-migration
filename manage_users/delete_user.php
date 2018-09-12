@@ -7,8 +7,8 @@
  */
 try{
     //include database connection
-    include 'DbOperation.php';
-    $conn = new DbOperation();
+    include '../DbOperations/DbOperationUsers.php';
+    $conn = new DbOperationUsers();
 
     // isset() is a PHP function used to verify if a value is there or not
     $id=isset($_GET['id']) ? $_GET['id'] : die('ERROR: Record ID not found.');
@@ -16,7 +16,7 @@ try{
     $req = $conn->delete_user($id);
     $res = json_decode($req, True);
     if(in_array('successful',$res)){
-        header('Location: dashboard.php?action=deleted');
+        header('Location: manage_users.php?action=deleted');
     }else{
         die('Unable to delete record.');
     }

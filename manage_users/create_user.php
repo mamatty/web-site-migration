@@ -3,10 +3,10 @@
 session_start();
 
 // Check if user is logged in using the session variable
-if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
+if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
 // Makes it easier to read
-$first_name = $_SESSION['first_name'];
-$last_name = $_SESSION['last_name'];
+$first_name = $_COOKIE['first_name'];
+$last_name = $_COOKIE['last_name'];
 ?>
 
     <!DOCTYPE html>
@@ -66,8 +66,8 @@ $last_name = $_SESSION['last_name'];
      */
         if($_POST){
 
-            include 'DbOperation.php';
-            $conn = new DbOperation();
+            include '../DbOperations/DbOperationUsers.php';
+            $conn = new DbOperationUsers();
 
             $name = $_POST['name'];
             $surname = $_POST['surname'];
@@ -79,11 +79,10 @@ $last_name = $_SESSION['last_name'];
             $subscription = $_POST['subscription'];
             $end_subscription = '';
 
-            /*$image=!empty($_FILES["image"]["name"])
-                ? sha1_file($_FILES['image']['tmp_name']) . "-" . basename($_FILES["image"]["name"])
-                : "";
-            */
             $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+
+            $b_date = new DateTime($birthdate);
+            $birthdate = $b_date->format('Y-m-d');
 
             $date = new DateTime();
             $datatime = $date->format('Y-m-d');
@@ -112,8 +111,8 @@ $last_name = $_SESSION['last_name'];
                 $end_subscription = $datatime;
             }
 
-            if(!empty($name) and !empty($surname) and !empty($email) and !empty($passwordHash) and !empty($address) and !empty($birthdate) and !empty($subscription) and !empty($tipology)){
-                $res = $conn->create_user($name, $surname, $email, $passwordHash, $address,  $birthdate, $phone, null, $subscription, $end_subscription);
+            if(!empty($name) and !empty($surname) and !empty($email) and !empty($passwordHash) and !empty($address) and !empty($birthdate) and !empty($subscription)){
+                $res = $conn->create_user($name, $surname, $email, $passwordHash, $address,  $birthdate, $phone, $subscription, $end_subscription);
                 $user = json_decode($res, True);
 
                 if(in_array('successful',$user)){
@@ -161,8 +160,8 @@ $last_name = $_SESSION['last_name'];
                 <tr>
                     <td>Phone</td>
                     <td><input type="tel" id="phone" name="phone"
-                               placeholder="123-456-7890"
-                               pattern="[0-9]{3}-[0-9]{3}-[0-9]{4}"
+                               placeholder="3333333333"
+                               pattern="[0-9]{10}"
                                required /></td>
                 </tr>
                 <tr>

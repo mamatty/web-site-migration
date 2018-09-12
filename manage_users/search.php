@@ -3,10 +3,10 @@
 session_start();
 
 // Check if user is logged in using the session variable
-if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
+if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
     // Makes it easier to read
-    $first_name = $_SESSION['first_name'];
-    $last_name = $_SESSION['last_name'];
+    $first_name = $_COOKIE['first_name'];
+    $last_name = $_COOKIE['last_name'];
     ?>
     <!DOCTYPE html>
     <html lang="en">
@@ -118,9 +118,8 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
      */
 
     // include database connection
-    include 'DbOperation.php';
-
-    $conn = new DbOperation();
+    include '../DbOperations/DbOperationUsers.php';
+    $conn = new DbOperationUsers();
 
     // PAGINATION VARIABLES
     // page is the current page, if there's nothing set, default is page 1
@@ -162,24 +161,23 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
         if (in_array('not-found', $user)) {
             echo "<div class='alert alert-danger'>No User found.</div>";
         } else {
-            for ($i = 0, $l = count($user); $i < $l; ++$i) {
+            echo "<table class='table table-hover table-responsive table-bordered'>";//start table
 
-                $id_user = $user[$i]['id_user'];
-                $name = $user[$i]['name'];
-                $surname = $user[$i]['surname'];
-                $email = $user[$i]['email'];
+            //creating our table heading
+            echo "<tr>";
+            echo "<th>ID</th>";
+            echo "<th>Name</th>";
+            echo "<th>Surname</th>";
+            echo "<th>Email</th>";
+            echo "<th>Action</th>";
+            echo "</tr>";
 
-                echo "<table class='table table-hover table-responsive table-bordered'>";//start table
+            for ($i = 0, $l = count($user['users']); $i < $l; ++$i) {
 
-                //creating our table heading
-                echo "<tr>";
-                echo "<th>ID</th>";
-                echo "<th>Name</th>";
-                echo "<th>Surname</th>";
-                echo "<th>Email</th>";
-                echo "<th>Action</th>";
-                echo "</tr>";
-
+                $id_user = $user['users'][$i]['id_user'];
+                $name = $user['users'][$i]['name'];
+                $surname = $user['users'][$i]['surname'];
+                $email = $user['users'][$i]['email'];
 
                 echo "<tr>";
                 echo "<td>$id_user</td>";
@@ -196,16 +194,17 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
 
                 // we will use this links on next part of this post
                 echo "<a href='#' onclick='delete_user($id_user);'  class='btn btn-danger'>Delete</a>";
-                echo "</td>";
-                echo "</tr>";
 
-                // end table
-                echo "</table>";
             }
+            echo "</td>";
+            echo "</tr>";
+
+            // end table
+            echo "</table>";
 
             // PAGINATION
             // count total number of rows
-            $total_rows = count($user);
+            $total_rows = $user['total_rows'];
 
             // paginate records
             $page_url = "dashboard.php?";
@@ -257,7 +256,7 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
                 });
                 $(document).on('click', 'li', function () {
                     $('#search').val($(this).text());
-                    $('#searchList').fadeOut();
+                    window.location = 'search.php?search=' + $(this).data('surname');
                 });
             });
         </script>

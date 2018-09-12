@@ -3,10 +3,10 @@
 session_start();
 
 // Check if user is logged in using the session variable
-if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
+if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
 // Makes it easier to read
-    $first_name = $_SESSION['first_name'];
-    $last_name = $_SESSION['last_name'];
+    $first_name = $_COOKIE['first_name'];
+    $last_name = $_COOKIE['last_name'];
     ?>
     <!DOCTYPE html>
     <html lang="en">
@@ -63,16 +63,20 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
         // isset() is a PHP function used to verify if a value is there or not
         $id=isset($_GET['id']) ? $_GET['id'] : die('ERROR: Record ID not found.');
 
-        include 'DbOperation.php';
-        $conn = new DbOperation();
+        include '../DbOperations/DbOperationUsers.php';
+        $conn = new DbOperationUsers();
+
         $req = $conn->look_updated_user($id);
         $user = json_decode($req, True);
         if($user['status'] == 'found'){
 
+            $date = new DateTime($user['birth_date']);
+            $b_day = $date->format('Y-m-d');
+
             $name = $user['name'];
             $surname = $user['surname'];
             $email = $user['email'];
-            $birthdate = $user['birth_date'];
+            $birthdate = $b_day;
             $address = $user['address'];
             $subscription = $user['subscription'];
 
@@ -85,10 +89,13 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
         if($_POST ){
             if(filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)){
 
+                $date = new DateTime($_POST['birthdate']);
+                $b_day = $date->format('Y-m-d');
+
                 $new_name = $_POST['name'];
                 $new_surname = $_POST['surname'];
                 $new_email = $_POST['email'];
-                $new_birth = $_POST['birthdate'];
+                $new_birth = $b_day;
                 $new_addr = $_POST['address'];
                 $new_sub = $_POST['subscription'];
 
@@ -132,15 +139,23 @@ if ( isset($_SESSION['logged_in']) and $_SESSION['logged_in'] == true) {
                     throw new Exception();
                 } else {
 
-                    $name = $user_up['name'];
-                    $surname = $user_up['surname'];
-                    $email = $user_up['email'];
-                    $birthdate = $user_up['birth_date'];
-                    $address = $user_up['address'];
-                    $subscription = $user_up['subscription'];
+                    $req = $conn->look_updated_user($id);
+                    $user = json_decode($req, True);
+                    if($user['status'] == 'found'){
 
-                    echo "<div class='alert alert-success'>User was updated.</div>";
+                        $date = new DateTime($user['birth_date']);
+                        $b_day = $date->format('Y-m-d');
 
+                        $name = $user['name'];
+                        $surname = $user['surname'];
+                        $email = $user['email'];
+                        $birthdate = $b_day;
+                        $address = $user['address'];
+                        $subscription = $user['subscription'];
+
+                        echo "<div class='alert alert-success'>User was updated.</div>";
+
+                    }
                 }
             }
             else{
