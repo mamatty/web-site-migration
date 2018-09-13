@@ -172,6 +172,9 @@ if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
                 echo "<td>";
 
                 // we will use this links on next part of this post
+                echo "<a href='read_one_exercise.php?id=".$id_exercise."' class='btn btn-info m-r-1em'>Read</a>";
+
+                // we will use this links on next part of this post
                 echo "<a href='update_exercise_list.php?id=".$id_exercise."' class='btn btn-primary m-r-1em'>Edit</a>";
 
                 // we will use this links on next part of this post

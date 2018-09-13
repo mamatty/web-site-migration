@@ -72,6 +72,7 @@ if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
         $name = $ex['name'];
         $description = $ex['description'];
         $muscolar_zone = $ex['muscular_zone'];
+        $url = $ex['url'];
     }else{
         echo "<div class='alert alert-danger'>Impossible to read the exercise.</div>";
     }
@@ -92,9 +93,13 @@ if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
             <td><?php echo htmlspecialchars($muscolar_zone, ENT_QUOTES);  ?></td>
         </tr>
         <tr>
+            <td>URL</td>
+            <td><a href="<?php echo $url ?>"> <?php echo htmlspecialchars($url, ENT_QUOTES);  ?></td>
+        </tr>
+        <tr>
             <td></td>
             <td>
-                <button onclick="goBack()" class='btn btn-danger'>Back to read Users</button>
+                <button onclick="goBack()" class='btn btn-danger'>Back to read exercises</button>
             </td>
         </tr>
     </table>
