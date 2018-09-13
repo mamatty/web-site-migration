@@ -31,7 +31,7 @@ class DbOperationUsers{
 
         $context  = stream_context_create($options);
         @$result = file_get_contents(AUTOCOMPLETE_USER.'?'.$data, false, $context);
-        
+
         if(!$result) {
             if (isset($http_response_header) && strpos($http_response_header[0], "401")) {
                 $error = $http_response_header[0];
@@ -72,7 +72,7 @@ class DbOperationUsers{
 
         $context  = stream_context_create($options);
         @$result = file_get_contents(CREATE_USER, false, $context);
-        
+
         if(!$result) {
             if (isset($http_response_header) && strpos($http_response_header[0], "401")) {
                 $error = $http_response_header[0];
@@ -105,7 +105,7 @@ class DbOperationUsers{
 
         $context  = stream_context_create($options);
         @$result = file_get_contents(DELETE_USER, false, $context);
-        
+
         if(!$result) {
             if (isset($http_response_header) && strpos($http_response_header[0], "401")) {
                 $error = $http_response_header[0];

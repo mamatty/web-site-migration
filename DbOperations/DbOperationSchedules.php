@@ -344,7 +344,7 @@ class DbOperationSchedules{
         );
 
         $context  = stream_context_create($options);
-        @$result = file_get_contents(MANAGE_EXERCISES.'?'.$data, false, $context);
+        $result = file_get_contents(MANAGE_EXERCISES.'?'.$data, false, $context);
 
         if(!$result) {
             if (isset($http_response_header) && strpos($http_response_header[0], "401")) {
