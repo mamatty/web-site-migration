@@ -95,26 +95,67 @@ $last_name = $_COOKIE['last_name'];
             </ul>
         </nav>
     </header>
-    <?php
-    require_once "../DbOperations/DbOperationDashboard.php";
-    $conn = new DbOperationDashboard();
-    $req = $conn->get_data();
-    $data = json_decode($req,True);
-    list($temperature, $humidity) = $conn->tmp_hum($data);
-
-    ?>
 
     <iframe width="450" height="260" style="border: 1px solid #cccccc;" src="https://thingspeak.com/channels/565919/charts/1?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&title=Temperature&type=line"></iframe>
 
 
     <iframe width="450" height="260" style="border: 1px solid #cccccc;" src="https://thingspeak.com/channels/565919/charts/2?bgcolor=%23ffffff&color=%23d62020&dynamic=true&results=60&title=Humidity&type=line"></iframe>
-    <h3 style="color:#0cff80;">Today's Temperature(avg): <?php echo $temperature?> °C</h3>
-    <h3 style="color:#461cff;">Today's Humidity(avg): <?php echo $humidity?> g/m³</h3>
+    <h3 style="color:#13ff5e;">
+        <div class="container" id="temp">
+        </div>
+    </h3>
+    <h3 style="color:#0088af;">
+        <div class="container" id="humidity">
+        </div>
+    </h3>
+<script>
+    $(document).ready(function(){
+        function getData(){
+            $.ajax({
+                type: 'POST',
+                url: 'temp.php',
+                success: function(data){
+                    $('#temp').html(data);
+                }
+            });
+        }
+        getData();
+        setInterval(function () {
+            getData();
+        }, 3000);  // it will refresh your data every 3 sec
+
+    });
+
+    $(document).ready(function(){
+        function getData(){
+            $.ajax({
+                type: 'POST',
+                url: 'humidity.php',
+                success: function(data){
+                    $('#humidity').html(data);
+                }
+            });
+        }
+        getData();
+        setInterval(function () {
+            getData();
+        }, 3000);  // it will refresh your data every 3 sec
+
+    });
+</script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
     <footer>
         <p>© 2018 Fitness Club</p>
         <p>Design for Smart Gym</p>
     </footer>
 </div>
+
+    <script>
+        setInterval(function () {
+            $("#values").load("dashboard.php");
+        }, 5000);
+    </script>
 
 
 </body>
