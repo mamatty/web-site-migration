@@ -21,6 +21,8 @@ session_start();
   setcookie ("first_name", "", time() - 3600,'/');
   setcookie ("last_name", "", time() - 3600,'/');
   setcookie ("email", "", time() - 3600,'/');
+  setcookie ("app-id", "", time() - 3600,'/');
+  setcookie ("token", "", time() - 3600,'/');
 
   $conn = new DbOperation();
   $req = $conn-> logout();
