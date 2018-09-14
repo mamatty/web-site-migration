@@ -97,6 +97,7 @@ if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
     <li><a href="../manage_users/manage_users.php">Manage Users</a></li>
     <li><a href="../manage_schedules/manage_users.php">Manage Schedules</a></li>
     <li><a href="../send_messages/read_messages.php">Send Messages</a></li>
+    <li><a href="../monitoring/monitoring.php">Monitoring</a></li>
     <li><a href="../dashboard/dashboard.php">Dashboard</a></li>
 </ul>
 </nav>
@@ -111,19 +112,19 @@ if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
                     <li><img src="images/slider-1.jpg" alt="">
                         <div class="banner">
                             <p class="font-1">Smart<span>Gym</span></p>
-                            <p class="font-2">Short description here.</p>
+                            <p class="font-2">The purpose of the proposed IoT infrastructure is to deploy a smart environment for managing and supervising gym activities and monitoring the ambience within the gym.</p>
                         </div>
                     </li>
                     <li><img src="images/slider-2.jpg" alt="">
                         <div class="banner">
                             <p class="font-1">Smart<span>Gym</span></p>
-                            <p class="font-2">Short description here.</p>
+                            <p class="font-2">The aim of this architectural realization consists on increasing the quality of services provided by the structure.</p>
                         </div>
                     </li>
                     <li><img src="images/slider-3.jpg" alt="">
                         <div class="banner">
                             <p class="font-1">Smart<span>Gym</span></p>
-                            <p class="font-2">Short description here.</p>
+                            <p class="font-2">Control and monitoring of the spaces inside the gym, in order to improve the quality of the atmospheric variables (humidity, temperature, ambient light, ambient oxygenation), with a better comfort perceived by the customers.</p>
                         </div>
                     </li>
                 </ul>
@@ -138,7 +139,7 @@ if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
         </div>
         <div class="grid_12 top-1">
             <div class="block-1 box-shadow">
-                <p class="font-3">Fitness Club is one of free website templates created by TemplateMonster. This website template is optimized for 1280X1024 screen resolution. This Fitness Club Template goes with 2 packages – with PSD source files and without them. PSD source files are available for free for the registered members of TemplateMonster.com.</p>
+                <p class="font-3">Smart Gym tends to be an innovative solution pointed towards different entities, which are closely interconnected in such an intrinsic way: while the main purpose is related to the enhancement of the QoS experienced by the customers, the side effects of this architecture show both an improvement of the eco-system ‘gym’ and a consequent energy saving process as results.</p>
             </div>
         </div>
         <div class="clear"></div>
