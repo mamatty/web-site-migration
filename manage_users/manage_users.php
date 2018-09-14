@@ -75,6 +75,9 @@ $last_name = $_COOKIE['last_name'];
             input[type=text]:focus {
                 width: 100%;
             }
+            td{
+                word-wrap:break-word;
+            }
         </style>
     </head>
     <body>
@@ -92,6 +95,7 @@ $last_name = $_COOKIE['last_name'];
                     <li class="current"><a href="manage_users.php">Manage Users</a></li>
                     <li><a href="../manage_schedules/manage_users.php">Manage Schedules</a></li>
                     <li><a href="../send_messages/read_messages.php">Send Messages</a></li>
+                    <li><a href="../monitoring/monitoring.php">Monitoring</a></li>
                     <li><a href="../dashboard/dashboard.php">Dashboard</a></li>
                 </ul>
             </nav>
@@ -149,7 +153,7 @@ $last_name = $_COOKIE['last_name'];
                 echo "<th>Name</th>";
                 echo "<th>Surname</th>";
                 echo "<th>Email</th>";
-                echo "<th>Action</th>";
+                echo "<th width=25%>Action</th>";
                 echo "</tr>";
 
                 for ($i = 0, $l = count($user['users']); $i < $l; ++$i) {

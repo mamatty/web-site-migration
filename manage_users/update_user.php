@@ -53,6 +53,7 @@ if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
                     <li class="current"><a href="manage_users.php">Manage Users</a></li>
                     <li><a href="../manage_schedules/manage_users.php">Manage Schedules</a></li>
                     <li><a href="../send_messages/read_messages.php">Send Messages</a></li>
+                    <li><a href="../monitoring/monitoring.php">Monitoring</a></li>
                     <li><a href="../dashboard/dashboard.php">Dashboard</a></li>
                 </ul>
             </nav>
@@ -85,81 +86,91 @@ if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
         ?>
         <?php
 
+        function validateDate($date)
+        {
+            $d = DateTime::createFromFormat('Y-m-d', $date);
+            return $d && $d->format('Y-m-d') == $date;
+        }
+
         // check if form was submitted
         if($_POST ){
-            if(filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)){
+            try{
+                if(filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
 
-                $date = new DateTime($_POST['birthdate']);
-                $b_day = $date->format('Y-m-d');
+                    if (!validateDate($_POST['birthdate'])) {
+                        echo "<div class='alert alert-danger'>Wrong birth date format.</div>";
+                        throw new Exception();
+                    }
 
-                $new_name = $_POST['name'];
-                $new_surname = $_POST['surname'];
-                $new_email = $_POST['email'];
-                $new_birth = $b_day;
-                $new_addr = $_POST['address'];
-                $new_sub = $_POST['subscription'];
+                    $date = new DateTime($_POST['birthdate']);
+                    $b_day = $date->format('Y-m-d');
 
-                $date = new DateTime();
-                $datatime = $date->format('Y-m-d');
+                    $new_name = $_POST['name'];
+                    $new_surname = $_POST['surname'];
+                    $new_email = $_POST['email'];
+                    $new_birth = $b_day;
+                    $new_addr = $_POST['address'];
+                    $new_sub = $_POST['subscription'];
 
-                if($new_sub == 'daily'){
-                    $new_end_sub = $datatime;
-                }
-                elseif ($new_sub == 'weekly'){
-                    $date->modify('+7 day');
+                    $date = new DateTime();
                     $datatime = $date->format('Y-m-d');
-                    $new_end_sub = $datatime;
-                }
-                elseif ($new_sub == 'monthly'){
-                    $date->modify('+1 month');
-                    $datatime = $date->format('Y-m-d');
-                    $new_end_sub = $datatime;
-                }
-                elseif ($new_sub == 'quarterly'){
-                    $date->modify('+3 month');
-                    $datatime = $date->format('Y-m-d');
-                    $new_end_sub = $datatime;
-                }
-                else{
-                    $date->modify('+1 year');
-                    $datatime = $date->format('Y-m-d');
-                    $new_end_sub = $datatime;
-                }
 
-                // Execution
-                $req_up = $conn->update_user($id,$new_name,$new_surname,$new_email,$new_birth,$new_addr,$new_sub, $new_end_sub);
-                $user_up = json_decode($req_up, True);
+                    if ($new_sub == 'daily') {
+                        $new_end_sub = $datatime;
+                    } elseif ($new_sub == 'weekly') {
+                        $date->modify('+7 day');
+                        $datatime = $date->format('Y-m-d');
+                        $new_end_sub = $datatime;
+                    } elseif ($new_sub == 'monthly') {
+                        $date->modify('+1 month');
+                        $datatime = $date->format('Y-m-d');
+                        $new_end_sub = $datatime;
+                    } elseif ($new_sub == 'quarterly') {
+                        $date->modify('+3 month');
+                        $datatime = $date->format('Y-m-d');
+                        $new_end_sub = $datatime;
+                    } else {
+                        $date->modify('+1 year');
+                        $datatime = $date->format('Y-m-d');
+                        $new_end_sub = $datatime;
+                    }
 
-                if (in_array('not-found', $user_up)) {
-                    echo "<div class='alert alert-danger'>User not found. There is an error!</div>";
-                    throw new Exception();
-                }
-                elseif(in_array('not-updated', $user_up)) {
-                    echo "<div class='alert alert-danger'>Unable to update user. Please try again.</div>";
-                    throw new Exception();
-                } else {
+                    // Execution
+                    $req_up = $conn->update_user($id, $new_name, $new_surname, $new_email, $new_birth, $new_addr, $new_sub, $new_end_sub);
+                    $user_up = json_decode($req_up, True);
 
-                    $req = $conn->look_updated_user($id);
-                    $user = json_decode($req, True);
-                    if($user['status'] == 'found'){
+                    if (in_array('not-found', $user_up)) {
+                        echo "<div class='alert alert-danger'>User not found. There is an error!</div>";
+                        throw new Exception();
+                    } elseif (in_array('not-updated', $user_up)) {
+                        echo "<div class='alert alert-danger'>Unable to update user. Please try again.</div>";
+                        throw new Exception();
+                    } else {
 
-                        $date = new DateTime($user['birth_date']);
-                        $b_day = $date->format('Y-m-d');
+                        $req = $conn->look_updated_user($id);
+                        $user = json_decode($req, True);
+                        if ($user['status'] == 'found') {
 
-                        $name = $user['name'];
-                        $surname = $user['surname'];
-                        $email = $user['email'];
-                        $birthdate = $b_day;
-                        $address = $user['address'];
-                        $subscription = $user['subscription'];
+                            $date = new DateTime($user['birth_date']);
+                            $b_day = $date->format('Y-m-d');
 
-                        echo "<div class='alert alert-success'>User was updated.</div>";
+                            $name = $user['name'];
+                            $surname = $user['surname'];
+                            $email = $user['email'];
+                            $birthdate = $b_day;
+                            $address = $user['address'];
+                            $subscription = $user['subscription'];
 
+                            echo "<div class='alert alert-success'>User was updated.</div>";
+
+                        }
                     }
                 }
-            }
-            else{
-                echo "<div class='alert alert-danger'>Email format not valid. Please try again.</div>";
+                else{
+                        echo "<div class='alert alert-danger'>Email format not valid. Please try again.</div>";
+                    }
+                }catch (Exception $e){
+                echo "<div class='alert alert-danger'>User not correctly updated!</div>";
             }
         }
         ?>

@@ -52,6 +52,7 @@ $last_name = $_COOKIE['last_name'];
                     <li class="current"><a href="manage_users.php">Manage Users</a></li>
                     <li><a href="../manage_schedules/manage_users.php">Manage Schedules</a></li>
                     <li><a href="../send_messages/read_messages.php">Send Messages</a></li>
+                    <li><a href="../monitoring/monitoring.php">Monitoring</a></li>
                     <li><a href="../dashboard/dashboard.php">Dashboard</a></li>
                 </ul>
             </nav>
@@ -64,69 +65,80 @@ $last_name = $_COOKIE['last_name'];
      * Date: 29/03/2018
      * Time: 11:37
      */
+
+        function validateDate($date)
+        {
+            $d = DateTime::createFromFormat('Y-m-d', $date);
+            return $d && $d->format('Y-m-d') == $date;
+        }
+
         if($_POST){
+            try {
+                include '../DbOperations/DbOperationUsers.php';
+                $conn = new DbOperationUsers();
 
-            include '../DbOperations/DbOperationUsers.php';
-            $conn = new DbOperationUsers();
+                $name = $_POST['name'];
+                $surname = $_POST['surname'];
+                $email = $_POST['email'];
+                $password = $_POST["password"];
+                $address = $_POST['address'];
+                $birthdate = $_POST['birthdate'];
+                $phone = $_POST['phone'];
+                $subscription = $_POST['subscription'];
+                $end_subscription = '';
 
-            $name = $_POST['name'];
-            $surname = $_POST['surname'];
-            $email = $_POST['email'];
-            $password = $_POST["password"];
-            $address = $_POST['address'];
-            $birthdate = $_POST['birthdate'];
-            $phone = $_POST['phone'];
-            $subscription = $_POST['subscription'];
-            $end_subscription = '';
+                $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
-            $passwordHash = password_hash($password, PASSWORD_DEFAULT);
 
-            $b_date = new DateTime($birthdate);
-            $birthdate = $b_date->format('Y-m-d');
-
-            $date = new DateTime();
-            $datatime = $date->format('Y-m-d');
-
-            if($subscription == 'daily'){
-                $end_subscription = $datatime;
-            }
-            elseif ($subscription == 'weekly'){
-                $date->modify('+7 day');
-                $datatime = $date->format('Y-m-d');
-                $end_subscription = $datatime;
-            }
-            elseif ($subscription == 'monthly'){
-                $date->modify('+1 month');
-                $datatime = $date->format('Y-m-d');
-                $end_subscription = $datatime;
-            }
-            elseif ($subscription == 'quarterly'){
-                $date->modify('+3 month');
-                $datatime = $date->format('Y-m-d');
-                $end_subscription = $datatime;
-            }
-            else{
-                $date->modify('+1 year');
-                $datatime = $date->format('Y-m-d');
-                $end_subscription = $datatime;
-            }
-
-            if(!empty($name) and !empty($surname) and !empty($email) and !empty($passwordHash) and !empty($address) and !empty($birthdate) and !empty($subscription)){
-                $res = $conn->create_user($name, $surname, $email, $passwordHash, $address,  $birthdate, $phone, $subscription, $end_subscription);
-                $user = json_decode($res, True);
-
-                if(in_array('successful',$user)){
-                    echo "<div class='alert alert-success'>User correctly registered was saved.</div>";
-
-                }elseif(in_array('already-registered',$user)){
-                    echo "<div class='alert alert-danger'>User already exists.</div>";
-                }else{
-                    echo "<div class='alert alert-danger'>User not registered.</div>";
+                if (!validateDate($_POST['birthdate'])) {
+                    echo "<div class='alert alert-danger'>Wrong birth date format.</div>";
+                    throw new Exception();
                 }
-            }else{
-                echo "<div class='alert alert-danger'>Fill all the fields.</div>";
-            }
 
+                $b_date = new DateTime($birthdate);
+                $birthdate = $b_date->format('Y-m-d');
+
+                $date = new DateTime();
+                $datatime = $date->format('Y-m-d');
+
+                if ($subscription == 'daily') {
+                    $end_subscription = $datatime;
+                } elseif ($subscription == 'weekly') {
+                    $date->modify('+7 day');
+                    $datatime = $date->format('Y-m-d');
+                    $end_subscription = $datatime;
+                } elseif ($subscription == 'monthly') {
+                    $date->modify('+1 month');
+                    $datatime = $date->format('Y-m-d');
+                    $end_subscription = $datatime;
+                } elseif ($subscription == 'quarterly') {
+                    $date->modify('+3 month');
+                    $datatime = $date->format('Y-m-d');
+                    $end_subscription = $datatime;
+                } else {
+                    $date->modify('+1 year');
+                    $datatime = $date->format('Y-m-d');
+                    $end_subscription = $datatime;
+                }
+
+                if (!empty($name) and !empty($surname) and !empty($email) and !empty($passwordHash) and !empty($address) and !empty($birthdate) and !empty($subscription)) {
+                    $res = $conn->create_user($name, $surname, $email, $passwordHash, $address, $birthdate, $phone, $subscription, $end_subscription);
+                    $user = json_decode($res, True);
+
+                    if (in_array('successful', $user)) {
+                        echo "<div class='alert alert-success'>User correctly registered was saved.</div>";
+
+                    } elseif (in_array('already-registered', $user)) {
+                        echo "<div class='alert alert-danger'>User with this email already exists.</div>";
+                    } else {
+                        echo "<div class='alert alert-danger'>User not registered.</div>";
+                    }
+                } else {
+                    echo "<div class='alert alert-danger'>Fill all the fields.</div>";
+                }
+            }catch (Exception $e){
+                echo "<div class='alert alert-danger'>User not correctly inserted!</div>";
+            }
 
         }
         ?>

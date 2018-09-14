@@ -52,6 +52,7 @@ if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
                     <li class="current"><a href="manage_users.php">Manage Users</a></li>
                     <li><a href="../manage_schedules/manage_users.php">Manage Schedules</a></li>
                     <li><a href="../send_messages/read_messages.php">Send Messages</a></li>
+                    <li><a href="../monitoring/monitoring.php">Monitoring</a></li>
                     <li><a href="../dashboard/dashboard.php">Dashboard</a></li>
                 </ul>
             </nav>
