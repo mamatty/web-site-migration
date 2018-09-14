@@ -38,7 +38,7 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
             check_mandatory_parameters([id_exercise], ["id"])
 
             # perform the query
-            query = "SELECT name, description, muscular_zone " \
+            query = "SELECT name, description, muscular_zone, url " \
                     "FROM exercise " \
                     "WHERE id_exercise = ?"
             response = self.db_perform_query(query, (int(id_exercise),), single_res=True)
@@ -52,7 +52,8 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
                     "status": kSTATUS_OK,
                     "name": response[0],
                     "description": response[1],
-                    "muscular_zone": response[2]
+                    "muscular_zone": response[2],
+                    "url": response[3]
                 }
                 return self.to_json(exercise_json)
 
@@ -889,24 +890,26 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
                 ["name", "surname", "email", "password", "address", "birth_date", "phone", "subscription",
                  "end_subscription"])
 
-            # try to create the user
-            query = "INSERT INTO user " \
-                    "(name, surname, email, password, address, birth_date, phone, subscription, end_subscription) " \
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
-            query_params = (name, surname, email, password, address, birth_date, phone, subscription, end_subscription)
-            self.db_perform_query(query, query_params, single_res=True)
+            # check errors (user already existing or DB error)
+            query_check = "SELECT id_user FROM user WHERE email = ?"
+            response_check = self.db_perform_query(query_check, (email,), single_res=True)
 
-            # final result
-            if self.db_manager.row_count != 0:
-                return json.dumps({"status": "successful"})
-            else:
-                # check errors (user already existing or DB error)
-                query_check = "SELECT id_user FROM user WHERE email = ?"
-                response_check = self.db_perform_query(query_check, (email,), single_res=True)
-                if response_check is None:
-                    return json.dumps({"status": "already-registered"})
+            if response_check is None:
+                # try to create the user
+                query = "INSERT INTO user " \
+                        "(name, surname, email, password, address, birth_date, phone, subscription, end_subscription) " \
+                        "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
+                query_params = (
+                name, surname, email, password, address, birth_date, phone, subscription, end_subscription)
+                self.db_perform_query(query, query_params, single_res=True)
+
+                # final result
+                if self.db_manager.row_count != 0:
+                    return json.dumps({"status": "successful"})
                 else:
                     return json.dumps({"status": "not-inserted"})
+            else:
+                return json.dumps({"status": "already-registered"})
 
         def update_user(p):
             # check if the user and the application are allowed to access the service
