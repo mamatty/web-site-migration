@@ -74,7 +74,16 @@ if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
         input[type=text]:focus {
             width: 100%;
         }
+        td{
+            word-wrap:break-word;
+        }
+
+        table.table.table-hover.table-responsive.table-bordered {
+            table-layout: fixed;
+            width: 960px;
+        }
     </style>
+
 </head>
 <body>
 
@@ -91,6 +100,7 @@ if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
                 <li><a href="../manage_users/manage_users.php">Manage Users</a></li>
                 <li class="current"><a href="manage_users.php">Manage Schedules</a></li>
                 <li><a href="../send_messages/read_messages.php">Send Messages</a></li>
+                <li><a href="../monitoring/monitoring.php">Monitoring</a></li>
                 <li><a href="../dashboard/dashboard.php">Dashboard</a></li>
             </ul>
         </nav>
@@ -157,11 +167,11 @@ if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
             echo "<tr>";
             echo "<th>Name</th>";
             echo "<th>Detail</th>";
-            echo "<th>Start Date</th>";
-            echo "<th>End Date</th>";
-            echo "<th>Number of days</th>";
+            echo "<th width=90px>Start Date</th>";
+            echo "<th width=90px>End Date</th>";
+            echo "<th width=50px>Days</th>";
             echo "<th>Objective</th>";
-            echo "<th>Action</th>";
+            echo "<th width=25%>Action</th>";
             echo "</tr>";
 
             for ($i = 0, $l = count($schedule['schedules']); $i < $l; ++$i) {
@@ -183,7 +193,7 @@ if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
                 echo "<td>$objective</td>";
                 echo "<td>";
                 // read one record
-                echo "<a href='manage_exercises.php?id=$id_schedule' class='btn btn-info m-r-1em'>Manage Schedule's Exercises</a>";
+                echo "<a href='manage_exercises.php?id=$id_schedule' class='btn btn-info m-r-1em'>Manage Exercises</a>";
 
                 // we will use this links on next part of this post
                 echo "<a href='#' onclick='delete_schedule($id_schedule);'  class='btn btn-danger'>Delete</a>";

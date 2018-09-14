@@ -60,6 +60,7 @@ $last_name = $_COOKIE['last_name'];
                 <li><a href="../manage_users/manage_users.php">Manage Users</a></li>
                 <li class="current"><a href="manage_users.php">Manage Schedules</a></li>
                 <li><a href="../send_messages/read_messages.php">Send Messages</a></li>
+                <li><a href="../monitoring/monitoring.php">Monitoring</a></li>
                 <li><a href="../dashboard/dashboard.php">Dashboard</a></li>
             </ul>
         </nav>
@@ -96,27 +97,41 @@ $last_name = $_COOKIE['last_name'];
         try{
             if ($_POST['name'] == ''){
                 echo "<div class='alert alert-danger'>Please insert a valid name.</div>";
-            }
-            // read current record's data
-            $res_up = $conn->update_exercise_list($id, $_POST['name'], $_POST['description'], $_POST['muscular_zone'], $_POST['url']);
-            $ex_up = json_decode($res,True);
-            if(in_array('not-updated', $ex_up)) {
-                echo "<div class='alert alert-danger'>Unable to update exercise. Please try again.</div>";
                 throw new Exception();
-            } else {
+            }
+
+            $url = $_POST['url'];
+            $url_youtube = explode("?",$url)[0];
+
+            if (strpos('https://www.youtube.com/watch',$url_youtube) !== false ){
 
                 // read current record's data
-                $res = $conn->look_updated_exercise_list($id);
-                $ex = json_decode($res,True);
-                if($ex['status'] == 'found') {
-                    $name = $ex['name'];
-                    $description = $ex['description'];
-                    $muscular_zone = $ex['muscular_zone'];
-                    $url = $ex['url'];
+                $res_up = $conn->update_exercise_list($id, $_POST['name'], $_POST['description'], $_POST['muscular_zone'], $_POST['url']);
+                $ex_up = json_decode($res,True);
+                if(in_array('not-updated', $ex_up)) {
+                    echo "<div class='alert alert-danger'>Unable to update exercise. Please try again.</div>";
+                    throw new Exception();
+                } else {
 
-                    echo "<div class='alert alert-success'>Exercise was updated.</div>";
+                    // read current record's data
+                    $res = $conn->look_updated_exercise_list($id);
+                    $ex = json_decode($res,True);
+                    if($ex['status'] == 'found') {
+                        $name = $ex['name'];
+                        $description = $ex['description'];
+                        $muscular_zone = $ex['muscular_zone'];
+                        $url = $ex['url'];
+
+                        echo "<div class='alert alert-success'>Exercise was updated.</div>";
+                    }
                 }
+
             }
+            else{
+                echo "<div class='alert alert-danger'>Not a valid youtube video URL.</div>";
+                throw new Exception();
+            }
+
         }
         catch (Exception $e){
             echo "<div class='alert alert-danger'>Exercise not correctly updated!</div>";

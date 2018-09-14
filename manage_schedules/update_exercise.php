@@ -60,6 +60,7 @@ $last_name = $_COOKIE['last_name'];
                 <li><a href="../manage_users/manage_users.php">Manage Users</a></li>
                 <li class="current"><a href="manage_users.php">Manage Schedules</a></li>
                 <li><a href="../send_messages/read_messages.php">Send Messages</a></li>
+                <li><a href="../monitoring/monitoring.php">Monitoring</a></li>
                 <li><a href="../dashboard/dashboard.php">Dashboard</a></li>
             </ul>
         </nav>
@@ -101,6 +102,14 @@ $last_name = $_COOKIE['last_name'];
         try{
             if($_POST['day'] < 1 or $_POST['day'] > 7){
                 echo "<div class='alert alert-danger'>Day not valid.</div>";
+                throw new Exception();
+            }
+            if($_POST['weight'] < 0 or $_POST['weight'] > 999){
+                echo "<div class='alert alert-danger'>Weight not valid! Max 999 kg</div>";
+                throw new Exception();
+            }
+            if($_POST['ripetitions'] < 0 or $_POST['ripetitions'] > 999){
+                echo "<div class='alert alert-danger'>Series not valid! Max 999.</div>";
                 throw new Exception();
             }
             // read current record's data

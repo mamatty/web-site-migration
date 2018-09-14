@@ -77,6 +77,7 @@ if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
                 <li><a href="../manage_users/manage_users.php">Manage Users</a></li>
                 <li class="current"><a href="manage_users.php">Manage Schedules</a></li>
                 <li><a href="../send_messages/read_messages.php">Send Messages</a></li>
+                <li><a href="../monitoring/monitoring.php">Monitoring</a></li>
                 <li><a href="../dashboard/dashboard.php">Dashboard</a></li>
             </ul>
         </nav>
@@ -90,6 +91,12 @@ if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
  */
 
     $id=isset($_GET['id']) ? $_GET['id'] : die('ERROR: Record ID not found.');
+
+    function validateDate($date)
+    {
+        $d = DateTime::createFromFormat('Y-m-d', $date);
+        return $d && $d->format('Y-m-d') == $date;
+    }
 
     if($_POST){
         try{
@@ -112,6 +119,11 @@ if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
 
             if($_POST['num_days'] < 1 or $_POST['num_days'] > 7){
                 echo "<div class='alert alert-danger'>Day not valid.</div>";
+                throw new Exception();
+            }
+
+            if(!validateDate($_POST['start_date']) or !validateDate($_POST['end_date'])){
+                echo "<div class='alert alert-danger'>Wrong start or end date format.</div>";
                 throw new Exception();
             }
 

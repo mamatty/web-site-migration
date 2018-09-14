@@ -74,6 +74,10 @@ if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
         input[type=text]:focus {
             width: 100%;
         }
+        td{
+            word-wrap:break-word;
+        }
+
     </style>
 </head>
 <body>
@@ -91,6 +95,7 @@ if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
                 <li><a href="../manage_users/manage_users.php">Manage Users</a></li>
                 <li class="current"><a href="manage_users.php">Manage Schedules</a></li>
                 <li><a href="../send_messages/read_messages.php">Send Messages</a></li>
+                <li><a href="../monitoring/monitoring.php">Monitoring</a></li>
                 <li><a href="../dashboard/dashboard.php">Dashboard</a></li>
             </ul>
         </nav>
@@ -154,7 +159,7 @@ if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
             echo "<tr>";
             echo "<th>Day</th>";
             echo "<th>Name</th>";
-            echo "<th>Ripetitions</th>";
+            echo "<th>Repetitions</th>";
             echo "<th>Weight</th>";
             echo "<th>Details</th>";
             echo "<th>Action</th>";

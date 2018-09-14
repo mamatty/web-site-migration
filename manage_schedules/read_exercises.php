@@ -76,6 +76,10 @@ if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
         input[type=text]:focus {
             width: 100%;
         }
+        td{
+            word-wrap:break-word;
+        }
+
     </style>
 </head>
 <body>
@@ -93,6 +97,7 @@ if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
                 <li><a href="../manage_users/manage_users.php">Manage Users</a></li>
                 <li class="current"><a href="manage_users.php">Manage Schedules</a></li>
                 <li><a href="../send_messages/read_messages.php">Send Messages</a></li>
+                <li><a href="../monitoring/monitoring.php">Monitoring</a></li>
                 <li><a href="../dashboard/dashboard.php">Dashboard</a></li>
             </ul>
         </nav>
@@ -157,7 +162,7 @@ if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
             echo "<th>Name</th>";
             echo "<th>Description</th>";
             echo "<th>Muscolar Zone</th>";
-            echo "<th>Action</th>";
+            echo "<th width=25%>Action</th>";
             echo "</tr>";
             for ($i = 0, $l = count($ex['exercises']); $i < $l; ++$i) {
                 $name = $ex['exercises'][$i]['name'];
