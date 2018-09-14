@@ -1,6 +1,15 @@
 <?php
 /* Displays user information and some useful messages */
 session_start();
+require_once '../DbOperations/Config.php';
+
+$host = IP_ADDRESS;
+$port = PORT;
+$waitTimeoutInSeconds = 1;
+if(!$fp = fsockopen($host,$port,$errCode,$errStr,$waitTimeoutInSeconds)){
+    $error = "Error 500: Impossible to enstablish a connection with the server! Please, Try in another moment.";
+    header( "location: ../Errors/error.php?error=".$error );
+}
 
 // Check if user is logged in using the session variable
 ?>
@@ -89,7 +98,7 @@ session_start();
 
             #list li a {
                 display: block;
-                width: 150px;
+                width: 190px;
                 color: #000;
                 padding: 8px 16px;
                 text-decoration: none;
@@ -137,6 +146,10 @@ session_start();
                 cursor: pointer;
             }
 
+            h4{
+                display: inline;
+            }
+
         </style>
 </head>
 <body>
@@ -163,17 +176,28 @@ session_start();
         <div class="group">
             <div class="text">
                 <ul id="list">
-                    <li><a class="btn active" onclick="showImage('images/smart_gym.png');">Gym Map</a></li>
-                    <li><a class="btn" onclick="showImage('images/smart-gym-2.png');">Zone A</a></li>
-                    <li><a class="btn" onclick="showImage('images/images-smart-gym.jpg');">Zone B</a></li>
-                    <li><a class="btn" onclick="showImage('images/smart-gym-2.png');">Zone C</a></li>
-                    <li><a class="btn" onclick="showImage('images/Smart-GYM-Egypt.jpg');">Shower cabins</a></li>
-                    <li><a class="btn" onclick="showImage('images/images-smart-gym.jpg');">Cabinets</a></li>
+                    <li><a class="btn active" onclick="showImage('images/zona A.PNG');">Zone A</a></li>
+                    <li><a class="btn" onclick="showImage('images/zona B.PNG');">Zone B</a></li>
+                    <li><a class="btn" onclick="showImage('images/zona C.PNG');">Zone C</a></li>
+                    <li><a class="btn" onclick="showImage('images/spogliatoio uomini.PNG');">Men Dressing Room</a></li>
+                    <li><a class="btn" onclick="showImage('images/spogliatoio donne.PNG');">Women Dressing Room</a></li>
+                    <br>
+                    <br>
+                    <li><strong>Legend:</strong></li>
+                    <li>
+                        <h4 style="color: red">● </h4> Busy
+                    </li>
+                    <li>
+                        <h4 style="color: #18ff00">●</h4> Available
+                    </li>
+                    <li>
+                        <h4 style="color: #000000">●</h4> Out of Service
+                    </li>
                 </ul>
             </div>
 
             <div class="images" >
-                <img src="images/smart_gym.png" alt="Smart Gym" id="currentImg" height="330" width="511">
+                <img src="images/zona A.PNG" alt="Smart Gym" id="currentImg" height="400" width="650">
             </div>
         </div>
 
