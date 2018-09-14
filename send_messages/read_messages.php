@@ -74,6 +74,10 @@ $last_name = $_COOKIE['last_name'];
         input[type=text]:focus {
             width: 100%;
         }
+        td{
+            word-wrap:break-word;
+        }
+
     </style>
 </head>
 <body>
@@ -91,6 +95,7 @@ $last_name = $_COOKIE['last_name'];
                     <li><a href="../manage_users/manage_users.php">Manage Users</a></li>
                     <li><a href="../manage_schedules/manage_users.php">Manage Schedules</a></li>
                     <li class="current"><a href="read_messages.php">Send Messages</a></li>
+                    <li><a href="../monitoring/monitoring.php">Monitoring</a></li>
                     <li><a href="../dashboard/dashboard.php">Dashboard</a></li>
                 </ul>
             </nav>
@@ -174,7 +179,7 @@ $last_name = $_COOKIE['last_name'];
             $total_rows = $res['total_rows'];
 
             // paginate records
-            $page_url="read_messages.php?";
+            $page_url="monitoring.php?";
             include_once "paging.php";
         }
 

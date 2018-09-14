@@ -56,7 +56,8 @@ if ( isset($_COOKIE['logged_in']) and $_COOKIE['logged_in'] == true) {
                 <li><a href="../fitness-club/index.php">Home</a></li>
                 <li><a href="../manage_users/manage_users.php">Manage Users</a></li>
                 <li><a href="../manage_schedules/manage_users.php">Manage Schedules</a></li>
-                <li class="current"><a href="read_one_message.php">Send Messages</a></li>
+                <li class="current"><a href="read_messages.php">Send Messages</a></li>
+                <li><a href="../monitoring/monitoring.php">Monitoring</a></li>
                 <li><a href="../dashboard/dashboard.php">Dashboard</a></li>
             </ul>
         </nav>
