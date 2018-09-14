@@ -53,4 +53,4 @@ if(count($temp) != 0){
     $mean_temp = 0.0;
 }
 
-echo "The average temperature today is: ".$mean_temp." °C \n";
+echo "The average temperature today is: ".number_format((float)$mean_temp, 2, '.', '')." °C \n";

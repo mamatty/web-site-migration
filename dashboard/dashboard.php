@@ -91,6 +91,7 @@ $last_name = $_COOKIE['last_name'];
                 <li><a href="../manage_users/manage_users.php">Manage Users</a></li>
                 <li><a href="../manage_schedules/manage_users.php">Manage Schedules</a></li>
                 <li><a href="../send_messages/read_messages.php">Send Messages</a></li>
+                <li><a href="../monitoring/monitoring.php">Monitoring</a></li>
                 <li class="current"><a href="dashboard.php"><a href="dashboard.php">Dashboard</a></li>
             </ul>
         </nav>

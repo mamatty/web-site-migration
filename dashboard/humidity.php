@@ -50,4 +50,4 @@ if(count($humidity) != 0){
     $mean_humidity = 0.0;
 }
 
-echo "The average humidity today is: ".$mean_humidity." g/m³";
+echo "The average humidity today is: ".number_format((float)$mean_humidity, 2, '.', '')." g/m³";
