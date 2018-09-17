@@ -151,6 +151,12 @@ if(!$fp = fsockopen($host,$port,$errCode,$errStr,$waitTimeoutInSeconds)){
             }
 
         </style>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta content="text/html; charset=iso-8859-2" http-equiv="Content-Type">
+        <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+        <style>
+            .mySlides {display:none;}
+        </style>
 </head>
 <body>
 
@@ -172,14 +178,14 @@ if(!$fp = fsockopen($host,$port,$errCode,$errStr,$waitTimeoutInSeconds)){
                 </ul>
             </nav>
         </header>
-
+<!--        onclick="showImage('images/zona A.PNG');"-->
         <div class="group">
             <div class="text">
                 <ul id="list">
-                    <li><a class="btn active" onclick="showImage('images/zona A.PNG');">Zone A</a></li>
+                    <li><a class="btn active" >Zone A</a></li>
                     <li><a class="btn" onclick="showImage('images/zona B.PNG');">Zone B</a></li>
                     <li><a class="btn" onclick="showImage('images/zona C.PNG');">Zone C</a></li>
-                    <li><a class="btn" onclick="showImage('images/spogliatoio uomini.PNG');">Men Dressing Room</a></li>
+                    <li><a class="btn ">Men Dressing Room</a></li>
                     <li><a class="btn" onclick="showImage('images/spogliatoio donne.PNG');">Women Dressing Room</a></li>
                     <br>
                     <br>
@@ -191,14 +197,22 @@ if(!$fp = fsockopen($host,$port,$errCode,$errStr,$waitTimeoutInSeconds)){
                         <h4 style="color: #18ff00">●</h4> Available
                     </li>
                     <li>
-                        <h4 style="color: #000000">●</h4> Out of Service
+                        <h4 style="color: #ff0493">●</h4> Out of Service
                     </li>
                 </ul>
             </div>
 
-            <div class="images" >
-                <img src="images/zona A.PNG" alt="Smart Gym" id="currentImg" height="400" width="650">
+            <div class="images" style="max-width:500px">
+                <img class="mySlides" src="images/zona A 2.PNG" alt="Smart Gym" id="currentImg" height="400" width="650">
+                <img class="mySlides" src="images/zona A 3.PNG" alt="Smart Gym" id="currentImg" height="400" width="650">
             </div>
+
+            <!--<div class="images" >
+                <ul class="items">
+                    <li><img  src="images/zona A.PNG" alt="Smart Gym" id="currentImg" height="400" width="650"></li>
+                    <li><img  src="images/zona B.PNG" alt="Smart Gym" id="currentImg" height="400" width="650"></li>
+                </ul>
+            </div>-->
         </div>
 
         <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
@@ -208,6 +222,23 @@ if(!$fp = fsockopen($host,$port,$errCode,$errStr,$waitTimeoutInSeconds)){
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+        <script>
+            var myIndex = 0;
+            carousel();
+
+            function carousel() {
+                var i;
+                var x = document.getElementsByClassName("mySlides");
+                for (i = 0; i < x.length; i++) {
+                    x[i].style.display = "none";
+                }
+                myIndex++;
+                if (myIndex > x.length) {myIndex = 1}
+                x[myIndex-1].style.display = "block";
+                setTimeout(carousel, 10000); // Change image every 10 seconds
+            }
+        </script>
 
         <script>
             // Add active class to the current button (highlight it)
