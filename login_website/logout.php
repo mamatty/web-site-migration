@@ -13,21 +13,16 @@ session_start();
   include 'css/css.html';
   require_once "../DbOperations/DbOperationLogin.php";
 
-  #skipping error warning
-
-  error_reporting(E_ERROR | E_PARSE);
-
-  setcookie ("logged_in", "", time() - 3600,'/');
-  setcookie ("first_name", "", time() - 3600,'/');
-  setcookie ("last_name", "", time() - 3600,'/');
-  setcookie ("email", "", time() - 3600,'/');
-  setcookie ("app-id", "", time() - 3600,'/');
-  setcookie ("token", "", time() - 3600,'/');
-
   $conn = new DbOperation();
   $req = $conn-> logout();
   $logout = json_decode($req,True);
   if($logout['status'] == 'successful'){
+      setcookie ("logged_in", "", time() - 3600,'/');
+      setcookie ("first_name", "", time() - 3600,'/');
+      setcookie ("last_name", "", time() - 3600,'/');
+      setcookie ("email", "", time() - 3600,'/');
+      setcookie ("app-id", "", time() - 3600,'/');
+      setcookie ("token", "", time() - 3600,'/');
 
       ?>
 

@@ -17,12 +17,8 @@ if ( $_COOKIE['logged_in'] != 1 ) {
     header("location: error.php");
 }
 else {
-    // Makes it easier to read
-    $first_name = $_COOKIE['first_name'];
-    $last_name = $_COOKIE['last_name'];
-    $email = $_COOKIE['email'];
-    $active = $_COOKIE['active'];
+
     header("location: ../fitness-club/index.php");
-    exit();
+
 }
 ?>

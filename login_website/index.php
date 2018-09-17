@@ -3,9 +3,9 @@
 
 session_start();
 require_once "../DbOperations/DbOperationLogin.php";
+require_once "../DbOperations/Config.php";
 $conn = new DbOperation();
-$app_id = $conn->generateToken();
-setcookie("app-id", "debug",time()+60*60*24*30,'/','',False, True);
+setcookie("app-id", APP_ID,time()+60*60*24*30,'/','',False, True);
 ?>
 <!DOCTYPE html>
 <html>
