@@ -1,5 +1,6 @@
 import json
 import time
+from passlib.hash import pbkdf2_sha256
 
 import cherrypy
 
@@ -623,7 +624,9 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
                 return self.to_json(res)
 
         def account_logout(p):
-            self.logged_users.pop(self.get_token_cookie())
+            token = self.get_token_cookie()
+            if token in self.logged_users:
+                del self.logged_users[token]
             return json.dumps({"status": "successful"})
 
         def is_logged(p):
@@ -661,33 +664,38 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
         return endpoints.get("/".join(uri), default)(params)
 
     def POST(self, *uri, **params):
+
         def logging(p):
             # check if the the application is allowed to access the service
             self._auth_app()
 
             # retrieve parameters
             email = p.get("email", None)
+            password = p.get('password')
 
-            check_mandatory_parameters([email], ["email"])
+            check_mandatory_parameters([email, password], ["email", "password"])
 
             # perform the query
-            query = "SELECT id, first_name, last_name, password FROM account WHERE email = ?"
+            query = "SELECT id_account, first_name, last_name, password FROM account WHERE email = ?"
             response = self.db_perform_query(query, (email,), single_res=True)
 
             if response is None:
                 return json.dumps({"status": kSTATUS_ERR})
             else:
-                self.set_logged_user(response[0])
+
+                if not pbkdf2_sha256.verify(password, response[3]):
+                    return json.dumps({"status": 'wrong-pass'})
+
+                cherrypy.response.cookie["token"] = self.set_logged_user(response[0])
                 user_json = {
                     "first_name": response[1],
                     "last_name": response[2],
-                    "password": response[3],
                     "status": "successful"
                 }
-                # TODO: insert a cookie in the response
                 return self.to_json(user_json)
 
         def register_account(p):
+
             # check if the application is allowed to access the service
             self._auth_app()
 
@@ -699,26 +707,31 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
             check_mandatory_parameters([email, first_name, last_name, password],
                                        ["email", "first_name", "last_name", "password"])
 
-            # try to register the user
-            query = "INSERT INTO account (first_name, last_name, email, password) VALUES (?,?,?,?)"
-            params = (first_name, last_name, email, password)
+            # maybe the user was already registered
+            query = "SELECT id_account FROM account WHERE email = ?"
+            control = self.db_perform_query(query, (email,), single_res=True)
 
-            self.db_perform_query(query, params)
-            if self.db_manager.row_count == 0:
-                # maybe the user was already registered
-                query = "SELECT id_user FROM user WHERE email = ?"
-                control = self.db_perform_query(query, (email,), single_res=True)
-                if control is None:
-                    # another kind of error occured
+            if control is None:
+
+                hash = pbkdf2_sha256.hash(password)
+
+                # try to register the user
+                query = "INSERT INTO account (first_name, last_name, email, password) VALUES (?,?,?,?)"
+                params = (first_name, last_name, email, hash)
+                self.db_perform_query(query, params, single_res=True)
+
+                if self.db_manager.row_count == 0:
                     return json.dumps({"status": "not-registered"})
-                else:
-                    return json.dumps({"status": "already-registered"})
-            else:
+
                 # retrieve the generated user ID
-                query = "SELECT id_user FROM user WHERE email = ?"
-                user_id = self.db_perform_query(query, (email,), single_res=True)
-                self.set_logged_user(user_id)
+                query = "SELECT id_account FROM account WHERE email = ?"
+                account_id = self.db_perform_query(query, (email,), single_res=True)
+                cherrypy.response.cookie["token"] = self.set_logged_user(account_id[0])
+
                 return json.dumps({"status": "successful"})
+            else:
+                return json.dumps({"status": "already-registered"})
+
 
         def create_exercise(p):
             # check if the user and the application are allowed to access the service
@@ -890,6 +903,8 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
                 ["name", "surname", "email", "password", "address", "birth_date", "phone", "subscription",
                  "end_subscription"])
 
+            hash = pbkdf2_sha256.hash(password)
+
             # check errors (user already existing or DB error)
             query_check = "SELECT id_user FROM user WHERE email = ?"
             response_check = self.db_perform_query(query_check, (email,), single_res=True)
@@ -900,7 +915,7 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
                         "(name, surname, email, password, address, birth_date, phone, subscription, end_subscription) " \
                         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)"
                 query_params = (
-                name, surname, email, password, address, birth_date, phone, subscription, end_subscription)
+                name, surname, email, hash, address, birth_date, phone, subscription, end_subscription)
                 self.db_perform_query(query, query_params, single_res=True)
 
                 # final result
