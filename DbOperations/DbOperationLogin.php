@@ -11,10 +11,11 @@ include_once dirname(__FILE__) . '/Config.php';
 
 class DbOperation{
 
-    public function login($email){
+    public function login($email,$password){
 
         $data = array(
-          'email' => $email
+            'email' => $email,
+            'password' => $password
         );
 
         $options = array(
@@ -31,6 +32,14 @@ class DbOperation{
         $context  = stream_context_create($options);
         @$result = file_get_contents(LOGIN, false, $context);
 
+        foreach ($http_response_header as $line){
+            preg_match('/Set-Cookie: token=([^;]+)/mi', $line, $match);
+            if($match){
+                $token_cookie = $match[1];
+            }
+        }
+        setcookie('token', $token_cookie,time()+60*60*24*30,'/','',False, True);
+
         if(!$result) {
             if (isset($http_response_header) && strpos($http_response_header[0], "401")) {
                 $error = $http_response_header[0];
@@ -46,18 +55,21 @@ class DbOperation{
 
     public function logout(){
 
-        $options = array(
-            'http' => array(
-                'header'  => array(
-                    "Content-type: application/x-www-form-urlencoded",
-                    "Cookie: app-id=".$_COOKIE["app-id"].";token=".$_COOKIE["token"]
-                ),
-                'method'  => 'POST'
+        $data = array('foo' => 'data');
+        $data = http_build_query($data);
+
+        $context_options = array (
+            'http' => array (
+                'method' => 'GET',
+                'header'=> "Content-type: application/x-www-form-urlencoded\r\n"
+                    . "Cookie: app-id=".$_COOKIE["app-id"].";token=".$_COOKIE["token"]."\r\n"
+                    . "Content-Length: " . strlen($data) . "\r\n",
+                'content' => $data
             )
         );
 
-        $context  = stream_context_create($options);
-        @$result = file_get_contents(LOGOUT, false, $context);
+        $context  = stream_context_create($context_options);
+        $result = file_get_contents(LOGOUT, false, $context);
 
         if(!$result) {
             if (isset($http_response_header) && strpos($http_response_header[0], "401")) {
@@ -93,7 +105,16 @@ class DbOperation{
         );
 
         $context  = stream_context_create($options);
-        @$result = file_get_contents(REGISTER, false, $context);
+        $result = file_get_contents(REGISTER, false, $context);
+
+        foreach ($http_response_header as $line){
+            preg_match('/Set-Cookie: token=([^;]+)/mi', $line, $match);
+            if($match){
+                $token_cookie = $match[1];
+            }
+        }
+        setcookie('token', $token_cookie,time()+60*60*24*30,'/','',False, True);
+
 
         if(!$result) {
             if (isset($http_response_header) && strpos($http_response_header[0], "401")) {

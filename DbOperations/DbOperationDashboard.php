@@ -29,7 +29,7 @@ class DbOperationDashboard{
         );
         $context = stream_context_create($options);
 
-        $sFile = file_get_contents(THINGSPEAK, False, $context);
+        @$sFile = file_get_contents(THINGSPEAK, False, $context);
 
         return $sFile;
     }
