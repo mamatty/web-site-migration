@@ -87,9 +87,6 @@ $last_name = $_COOKIE['last_name'];
                 $subscription = $_POST['subscription'];
                 $end_subscription = '';
 
-                $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-
-
                 if (!validateDate($_POST['birthdate'])) {
                     echo "<div class='alert alert-danger'>Wrong birth date format.</div>";
                     throw new Exception();
@@ -121,8 +118,8 @@ $last_name = $_COOKIE['last_name'];
                     $end_subscription = $datatime;
                 }
 
-                if (!empty($name) and !empty($surname) and !empty($email) and !empty($passwordHash) and !empty($address) and !empty($birthdate) and !empty($subscription)) {
-                    $res = $conn->create_user($name, $surname, $email, $passwordHash, $address, $birthdate, $phone, $subscription, $end_subscription);
+                if (!empty($name) and !empty($surname) and !empty($email) and !empty($password) and !empty($address) and !empty($birthdate) and !empty($subscription)) {
+                    $res = $conn->create_user($name, $surname, $email, $password, $address, $birthdate, $phone, $subscription, $end_subscription);
                     $user = json_decode($res, True);
 
                     if (in_array('successful', $user)) {
