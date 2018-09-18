@@ -180,6 +180,10 @@ class TelegramBot(Microservice):
         self.bot.message_loop(self.on_chat_message)
 
         print('Listening ...')
+        
+        while True:
+           import time
+           time.sleep(60)
 
 
 if __name__ == '__main__':
