@@ -3,6 +3,7 @@ import json
 import requests
 import numpy
 import time
+import math
 
 from microservices.microservice import Microservice
 
@@ -43,7 +44,7 @@ class TelegramBot(Microservice):
 
                 for res in wjson['feeds']:
 
-                    if res['field1'] is not None:
+                    if res['field1'] is not None and not math.isnan(float(res['field1'])):
                         date = res['created_at'].split('T')[0]
 
                         results_tm = {
@@ -53,7 +54,7 @@ class TelegramBot(Microservice):
 
                         temp.append(results_tm)
 
-                    if res['field2'] is not None:
+                    if res['field2'] is not None and not math.isnan(float(res['field2'])):
                         date = res['created_at'].split('T')[0]
 
                         results_tm = {
@@ -79,11 +80,11 @@ class TelegramBot(Microservice):
 
         for x in data:
             if x['date'] == date:
-                sum = sum + int(x['value'])
+                sum = sum + float(x['value'])
                 count = count + 1
 
         try:
-            return sum/count
+            return float(sum/count)
         except ZeroDivisionError:
             return 0
 
@@ -114,7 +115,7 @@ class TelegramBot(Microservice):
 
             elif msg['text'] == '/get_humidity':
                 try:
-                    if humidity[-1]['value'] is not None and humidity[-1]['date'] == date :
+                    if humidity[-1]['value'] is not None and humidity[-1]['date'] == date:
                         self.bot.sendMessage(chat_id, 'The actual humidity is: '+str(humidity[-1]['value'])+' g/m³')
                         return
                     else:
@@ -141,7 +142,7 @@ class TelegramBot(Microservice):
 
             elif msg['text'] == '/get_today_humidity':
                 try:
-                    mean_hum = self.mean_values(temp)
+                    mean_hum = self.mean_values(humidity)
                     if mean_hum != 0:
                         self.bot.sendMessage(chat_id, 'Today ' + str(date) + ' the mean humidity is: ' + str(mean_hum)+' g/m³')
                         return
@@ -180,10 +181,10 @@ class TelegramBot(Microservice):
         self.bot.message_loop(self.on_chat_message)
 
         print('Listening ...')
-        
+
         while True:
-           import time
-           time.sleep(60)
+            import time
+            time.sleep(60)
 
 
 if __name__ == '__main__':
