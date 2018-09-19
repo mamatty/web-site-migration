@@ -207,7 +207,7 @@ $last_name = $_COOKIE['last_name'];
 </div>
 
 
-!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
 
 <!-- Latest compiled and minified Bootstrap JavaScript -->
