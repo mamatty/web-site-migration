@@ -32,24 +32,25 @@ class DbOperation{
         $context  = stream_context_create($options);
         @$result = file_get_contents(LOGIN, false, $context);
 
-        foreach ($http_response_header as $line){
-            preg_match('/Set-Cookie: token=([^;]+)/mi', $line, $match);
-            if($match){
-                $token_cookie = $match[1];
-            }
-        }
-        setcookie('token', $token_cookie,time()+60*60*24*30,'/','',False, True);
-
         if(!$result) {
             if (isset($http_response_header) && strpos($http_response_header[0], "401")) {
-                $error = $http_response_header[0];
+                $result['error'] = $http_response_header[0];
             }
             else {
-                $error = "Error 500: Impossible to enstablish a connection with the server! Please, Try in another moment.";
+                $result['error'] = "Error 500: Impossible to enstablish a connection with the server! Please, Try in another moment.";
             }
-            header( "location: ../Errors/error.php?error=".$error );
-        }
+            $result = json_encode($result);
+        }else {
 
+            foreach ($http_response_header as $line) {
+                preg_match('/Set-Cookie: token=([^;]+)/mi', $line, $match);
+                if ($match) {
+                    $token_cookie = $match[1];
+                }
+            }
+            setcookie('token', $token_cookie, time() + 60 * 60 * 24 * 30, '/', '', False, True);
+
+        }
         return $result;
     }
 
@@ -105,27 +106,27 @@ class DbOperation{
         );
 
         $context  = stream_context_create($options);
-        $result = file_get_contents(REGISTER, false, $context);
-
-        foreach ($http_response_header as $line){
-            preg_match('/Set-Cookie: token=([^;]+)/mi', $line, $match);
-            if($match){
-                $token_cookie = $match[1];
-            }
-        }
-        setcookie('token', $token_cookie,time()+60*60*24*30,'/','',False, True);
-
+        @$result = file_get_contents(REGISTER, false, $context);
 
         if(!$result) {
             if (isset($http_response_header) && strpos($http_response_header[0], "401")) {
-                $error = $http_response_header[0];
+                $result['error'] = $http_response_header[0];
             }
             else {
-                $error = "Error 500: Impossible to enstablish a connection with the server! Please, Try in another moment.";
+                $result['error'] = "Error 500: Impossible to enstablish a connection with the server! Please, Try in another moment.";
             }
-            header( "location: ../Errors/error.php?error=".$error );
-        }
+            $result = json_encode($result);
+        }else {
 
+            foreach ($http_response_header as $line) {
+                preg_match('/Set-Cookie: token=([^;]+)/mi', $line, $match);
+                if ($match) {
+                    $token_cookie = $match[1];
+                }
+            }
+            setcookie('token', $token_cookie, time() + 60 * 60 * 24 * 30, '/', '', False, True);
+
+        }
         return $result;
 
     }
