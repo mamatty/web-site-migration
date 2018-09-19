@@ -14,17 +14,19 @@ $var_tmp = array();
 
 $temp = array();
 
-
 for ($i = 0, $l = count($data['feeds']); $i < $l; ++$i) {
-    $tmp = explode('T',$data['feeds'][$i]['created_at']);
+    if(!is_nan($data['feeds'][$i]['field1'])) {
 
-    array_push($var_tmp,$data['feeds'][$i]['field1'], $tmp[0]);
+        $tmp = explode('T', $data['feeds'][$i]['created_at']);
 
-    array_push($temp,$var_tmp);
+        array_push($var_tmp, $data['feeds'][$i]['field1'], $tmp[0]);
 
-    unset($var_tmp);
+        array_push($temp, $var_tmp);
 
-    $var_tmp = array();
+        unset($var_tmp);
+
+        $var_tmp = array();
+    }
 }
 
 $date = new DateTime();

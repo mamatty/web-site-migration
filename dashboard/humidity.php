@@ -11,18 +11,21 @@ $req = $conn->get_data();
 $data = json_decode($req,True);
 
 $var_hmd = array();
+
 $humidity = array();
 
 for ($i = 0, $l = count($data['feeds']); $i < $l; ++$i) {
-    $tmp = explode('T',$data['feeds'][$i]['created_at']);
+    if(!is_nan($data['feeds'][$i]['field2'])){
+        $tmp = explode('T',$data['feeds'][$i]['created_at']);
 
-    array_push($var_hmd,$data['feeds'][$i]['field2'], $tmp[0]);
+        array_push($var_hmd,$data['feeds'][$i]['field2'], $tmp[0]);
 
-    array_push($humidity,$var_hmd);
+        array_push($humidity,$var_hmd);
 
-    unset($var_hmd);
+        unset($var_hmd);
 
-    $var_hmd = array();
+        $var_hmd = array();
+    }
 }
 
 $date = new DateTime();
