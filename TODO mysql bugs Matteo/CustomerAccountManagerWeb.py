@@ -671,7 +671,7 @@ class CustomAccountManagerMobileWeb(CustomerAccountManagerBase):
 
             # retrieve parameters
             email = p.get("email", None)
-            password = p.get('password', None)
+            password = p.get('password')
 
             check_mandatory_parameters([email, password], ["email", "password"])
 
