@@ -10,16 +10,20 @@ if(isset($_POST['email']) and isset($_POST['password'])){
         $_SESSION['message'] = "User or password not correct";
         header("location: error.php");
     }
+    elseif(array_key_exists('error', $login)){
+        header( "location: ../Errors/error.php?error=".$login['error']." - The application is not allowed to access the service");
+    }
     else { // User exists
 
-        setcookie('email', $_POST['email'],time()+60*60*24*30,'/','',False, True);
-        setcookie('first_name', $login['first_name'],time()+60*60*24*30,'/','',False, True);
-        setcookie('last_name', $login['last_name'],time()+60*60*24*30,'/','',False, True);
+        setcookie('email', $_POST['email'], time() + 60 * 60 * 24 * 30, '/', '', False, True);
+        setcookie('first_name', $login['first_name'], time() + 60 * 60 * 24 * 30, '/', '', False, True);
+        setcookie('last_name', $login['last_name'], time() + 60 * 60 * 24 * 30, '/', '', False, True);
 
         // This is how we'll know the user is logged in
-        setcookie('logged_in', True,time()+60*60*24*30,'/','',False, True);
+        setcookie('logged_in', True, time() + 60 * 60 * 24 * 30, '/', '', False, True);
 
-        header("location: ../fitness-club/index.php");
+        header("location: ../login_website/index.php?error=".$login['error']);
+
     }
 }
 

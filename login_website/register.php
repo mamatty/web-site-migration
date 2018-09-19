@@ -16,6 +16,9 @@ if(filter_var($email, FILTER_VALIDATE_EMAIL)) {
         header("location: error.php");
 
     }
+    elseif(array_key_exists('error', $login)){
+        header( "location: ../Errors/error.php?error=".$login['error']." - The application is not allowed to access the service");
+    }
     elseif($register['status'] == 'successful'){ // Email doesn't already exist in a database, proceed...
 
             // Set session variables
