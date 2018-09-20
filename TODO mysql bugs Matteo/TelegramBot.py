@@ -3,6 +3,7 @@ import json
 import requests
 import numpy
 import time
+import math
 
 from microservices.microservice import Microservice
 
@@ -43,25 +44,27 @@ class TelegramBot(Microservice):
 
                 for res in wjson['feeds']:
 
-                    if res['field1'] is not None:
-                        date = res['created_at'].split('T')[0]
+                    if res['field1'] is not None and res['field1']:
+                        if not math.isnan(float(res['field1'])):
+                            date = res['created_at'].split('T')[0]
 
-                        results_tm = {
-                            'value': res['field1'],
-                            'date': date
-                        }
+                            results_tm = {
+                                'value': res['field1'],
+                                'date': date
+                            }
 
-                        temp.append(results_tm)
+                            temp.append(results_tm)
 
-                    if res['field2'] is not None:
-                        date = res['created_at'].split('T')[0]
+                    if res['field2'] is not None and res['field2']:
+                        if not math.isnan(float(res['field2'])):
+                            date = res['created_at'].split('T')[0]
 
-                        results_tm = {
-                            'value': res['field2'],
-                            'date': date
-                        }
+                            results_tm = {
+                                'value': res['field2'],
+                                'date': date
+                            }
 
-                        humidity.append(results_tm)
+                            humidity.append(results_tm)
 
                 return temp, humidity
 
@@ -79,11 +82,11 @@ class TelegramBot(Microservice):
 
         for x in data:
             if x['date'] == date:
-                sum = sum + int(x['value'])
+                sum = sum + float(x['value'])
                 count = count + 1
 
         try:
-            return sum/count
+            return float(sum/count)
         except ZeroDivisionError:
             return 0
 
@@ -101,9 +104,13 @@ class TelegramBot(Microservice):
 
             elif msg['text'] == '/get_temperature':
                 try:
-                    if temp[-1]['value'] is not None and temp[-1]['date'] == date:
-                        self.bot.sendMessage(chat_id, 'The actual temperature is: '+str(temp[-1]['value'])+' °C')
-                        return
+                    if temp:
+                        if temp[-1]['value'] is not None and temp[-1]['date'] == date:
+                            self.bot.sendMessage(chat_id, 'The actual temperature is: '+str(temp[-1]['value'])+' °C')
+                            return
+                        else:
+                            self.bot.sendMessage(chat_id, 'No temperature measurement are available!')
+                            return
                     else:
                         self.bot.sendMessage(chat_id, 'No temperature measurement are available!')
                         return
@@ -114,9 +121,13 @@ class TelegramBot(Microservice):
 
             elif msg['text'] == '/get_humidity':
                 try:
-                    if humidity[-1]['value'] is not None and humidity[-1]['date'] == date :
-                        self.bot.sendMessage(chat_id, 'The actual humidity is: '+str(humidity[-1]['value'])+' g/m³')
-                        return
+                    if humidity:
+                        if humidity[-1]['value'] is not None and humidity[-1]['date'] == date:
+                            self.bot.sendMessage(chat_id, 'The actual humidity is: '+str(humidity[-1]['value'])+' g/m³')
+                            return
+                        else:
+                            self.bot.sendMessage(chat_id, 'No humidity measurement are available!')
+                            return
                     else:
                         self.bot.sendMessage(chat_id, 'No humidity measurement are available!')
                         return
@@ -127,10 +138,14 @@ class TelegramBot(Microservice):
 
             elif msg['text'] == '/get_today_temperature':
                 try:
-                    mean_temp = self.mean_values(temp)
-                    if mean_temp != 0:
-                        self.bot.sendMessage(chat_id, 'Today '+str(date)+' the mean temperature is: '+str(mean_temp)+' °C')
-                        return
+                    if temp:
+                        mean_temp = self.mean_values(temp)
+                        if mean_temp != 0:
+                            self.bot.sendMessage(chat_id, 'Today '+str(date)+' the mean temperature is: '+str(mean_temp)+' °C')
+                            return
+                        else:
+                            self.bot.sendMessage(chat_id, 'No temperature measurement are available!')
+                            return
                     else:
                         self.bot.sendMessage(chat_id, 'No temperature measurement are available!')
                         return
@@ -141,10 +156,14 @@ class TelegramBot(Microservice):
 
             elif msg['text'] == '/get_today_humidity':
                 try:
-                    mean_hum = self.mean_values(temp)
-                    if mean_hum != 0:
-                        self.bot.sendMessage(chat_id, 'Today ' + str(date) + ' the mean humidity is: ' + str(mean_hum)+' g/m³')
-                        return
+                    if humidity:
+                        mean_hum = self.mean_values(humidity)
+                        if mean_hum != 0:
+                            self.bot.sendMessage(chat_id, 'Today ' + str(date) + ' the mean humidity is: ' + str(mean_hum)+' g/m³')
+                            return
+                        else:
+                            self.bot.sendMessage(chat_id, 'No humidity measurement are available!')
+                            return
                     else:
                         self.bot.sendMessage(chat_id, 'No humidity measurement are available!')
                         return
@@ -181,6 +200,10 @@ class TelegramBot(Microservice):
 
         print('Listening ...')
 
+        while True:
+            import time
+            time.sleep(60)
+
 
 if __name__ == '__main__':
     from smartgym_packages.core.launcher import Launcher
@@ -189,4 +212,4 @@ if __name__ == '__main__':
 
     l = Launcher()
     l.start_catalog()
-    l.start('CAM_web', TelegramBot.start_ms_normal, args=(10, CONF))
+    l.start('CAM_bot', TelegramBot.start_ms_normal, args=(10, CONF))
