@@ -22,7 +22,7 @@ if(isset($_POST['email']) and isset($_POST['password'])){
         // This is how we'll know the user is logged in
         setcookie('logged_in', True, time() + 60 * 60 * 24 * 30, '/', '', False, True);
 
-        header("location: ../login_website/index.php?error=".$login['error']);
+        header("location: ../fitness-club/index.php");
 
     }
 }
