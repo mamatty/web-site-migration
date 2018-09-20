@@ -15,7 +15,7 @@ $var_hmd = array();
 $humidity = array();
 
 for ($i = 0, $l = count($data['feeds']); $i < $l; ++$i) {
-    if(!is_nan($data['feeds'][$i]['field2'])){
+    if(is_numeric($data['feeds'][$i]['field2'])){
         $tmp = explode('T',$data['feeds'][$i]['created_at']);
 
         array_push($var_hmd,$data['feeds'][$i]['field2'], $tmp[0]);
@@ -40,17 +40,25 @@ for ($i = 0, $l = count($humidity); $i < $l; ++$i) {
         unset($humidity[$i]);
     }
 }
-$humidity = array_values($humidity);
-$td_humidity = 0;
 
-foreach ($humidity as $hm){
-    $td_humidity += $hm[0];
+if(empty($humidity)){
+    echo "Impossible to obtain a measurement!";
 }
+else{
 
-if(count($humidity) != 0){
-    $mean_humidity = $td_humidity/count($humidity);
-}else{
-    $mean_humidity = 0.0;
+    $humidity = array_values($humidity);
+
+    $td_humidity = 0;
+
+    foreach ($humidity as $hm){
+        $td_humidity += $hm[0];
+    }
+
+    if(count($humidity) != 0){
+        $mean_humidity = $td_humidity/count($humidity);
+    }else{
+        $mean_humidity = 0.0;
+    }
+
+    echo "The average humidity today is: ".number_format((float)$mean_humidity, 2, '.', '')." g/m³";
 }
-
-echo "The average humidity today is: ".number_format((float)$mean_humidity, 2, '.', '')." g/m³";

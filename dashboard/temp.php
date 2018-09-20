@@ -15,7 +15,7 @@ $var_tmp = array();
 $temp = array();
 
 for ($i = 0, $l = count($data['feeds']); $i < $l; ++$i) {
-    if(!is_nan($data['feeds'][$i]['field1'])) {
+    if(is_numeric($data['feeds'][$i]['field1'])) {
 
         $tmp = explode('T', $data['feeds'][$i]['created_at']);
 
@@ -41,18 +41,24 @@ for ($i = 0, $l = count($temp); $i < $l; ++$i) {
     }
 }
 
-$temp = array_values($temp);
-
-$td_temp = 0;
-
-foreach ($temp as $tm){
-    $td_temp += $tm[0];
+if(empty($temp)){
+    echo "Impossible to obtain a measurement!";
 }
+else{
 
-if(count($temp) != 0){
-    $mean_temp = $td_temp/count($temp);
-}else{
-    $mean_temp = 0.0;
+    $temp = array_values($temp);
+
+    $td_temp = 0;
+
+    foreach ($temp as $tm) {
+        $td_temp += $tm[0];
+    }
+
+    if (count($temp) != 0) {
+        $mean_temp = $td_temp / count($temp);
+    } else {
+        $mean_temp = 0.0;
+    }
+
+    echo "The average temperature today is: " . number_format((float)$mean_temp, 2, '.', '') . " °C \n";
 }
-
-echo "The average temperature today is: ".number_format((float)$mean_temp, 2, '.', '')." °C \n";
